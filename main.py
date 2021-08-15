@@ -8,8 +8,6 @@ import warnings
 warnings.filterwarnings("ignore")
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
-
-
 def train(model, config, train_file, test_file, test_file2, train_date):
     print("Configuring TensorBoard and Saver...")
     tf_config = tf.ConfigProto()
@@ -18,12 +16,12 @@ def train(model, config, train_file, test_file, test_file2, train_date):
     sess.run(tf.global_variables_initializer())
 
     print('Training and evaluating...')
-    model_dir = "....."
-    save_path = os.path.join(model_dir, '....' + train_date)
+    model_dir = "model_save/"
+    save_path = os.path.join(model_dir, 'flj_' + train_date)
     saver = tf.train.Saver(max_to_keep=3)
 
     total_batch = 0  # 总批次
-    print_per_batch = 100  # 每多个batch 输出eval
+    print_per_batch = 4000  # 每多个batch 输出eval
 
     for eppch_tmp in range(config["train_epoch"]):
         print("-----------------  Epoch {0} start ! --------------------".format(eppch_tmp))
@@ -69,62 +67,57 @@ if __name__ == '__main__':
     print('Configuring DSTN SnpShot model...')
 
     config = {
-        "base_fea_size": "base_fea_size",
-        "anchorId_size": "anchorId_size",
-        "anchor_livefea_size": "anchor_livefea_size",
-        "user_stat_fea_size": "user_stat_fea_size",
-        "realtimeFea_size": "realtimeFea_size",
-        "statsFea_size": "statsFea_size",
-        "Tophour_fea_size": "Tophour_fea_size",
-        "hour_size": "hour_size",
-        "day_fea_size": "day_fea_size",
-        "songtag_size": "songtag_size",
-        "LivePosition_size":"LivePosition_size",
+        "base_fea_size": 2000,
+        "anchorId_size": 600000,
+        "anchor_livefea_size": 500,
+        "user_stat_fea_size": 120,
+        "realtimeFea_size": 2760,
+        "statsFea_size": 210,
+        "Tophour_fea_size": 80,
+        "hour_size": 12,
+        "day_fea_size": 30,
+        "songtag_size": 90,
+        "LivePosition_size":15,
 
-        "profile_size": "profile_size",
-        "user_statIds_size": "user_statIds_size",
-        "realtime_values_size": "realtime_values_size",
-        "anchor_stats_size": "anchor_stats_size",
-        "live_size": "live_size",
-        "day_ctr_size": "day_ctr_size",
-        "day_cvr_size": "day_cvr_size",
-        "user_topHourIds_size": "user_topHourIds_size",
-        "tagidOnehot_size":"tagidOnehot_size",
+        "profile_size": 8,
+        "user_statIds_size": 12,
+        "realtime_values_size": 22,
+        "anchor_stats_size": 15,
+        "live_size": 4,
+        "day_ctr_size": 7,
+        "day_cvr_size": 7,
+        "user_topHourIds_size": 6,
+        "tagidOnehot_size":38,
 
-        "fea_sim_size": "fea_sim_size",
-        "ctr_task_wgt": "ctr_task_wgt",
-        "embedding_size": "embedding_size",
-        "learning_rate": "learning_rate",
-        "l2_reg_lambda": "l2_reg_lambda",
-        "batch_size": "batch_size",
-        "n_class": "n_class",
+        "fea_sim_size": 2,
+        "ctr_task_wgt": 0.7,
+        "embedding_size": 32,
+        "learning_rate": 0.001,
+        "l2_reg_lambda": 0.0001,
+        "batch_size": 1024,
+        "n_class": 2,
 
-        "batch_norm": "batch_norm",
-        "batch_norm_decay":"batch_norm_decay",
+        "batch_norm": 1,
+        "batch_norm_decay": 0.995,
         ###  category
-        "deep_layers": "deep_layers",
-        "deep_layers_2": "deep_layers_2",
-        "cross_layer_sizes": "cross_layer_sizes",
-        "freve_layers": "freve_layers",
+        "deep_layers": [512, 256, 128],
+        "deep_layers_2": [512, 128],
+        "cross_layer_sizes": [100, 100, 50],
+        "freve_layers": "null",
         # random setting, may need fine-tune
-        "train_epoch": "train_epoch"
+        "train_epoch": 2
     }
 
 
     train_date = sys.argv[1]
 
-    train_file= "..."
-    test_file = "..."
-    test_file2 = "..."
+    train_file= ""
+    test_file = ""
+    test_file2 = ""
 
     config["is_aux"] = True
     print("now train date: ", train_date)
     classifier = Model_DSTN_SNPSHOT(config)
     classifier.bulid_graph()
     train(classifier, config, train_file, test_file, test_file2, train_date)
-
-
-
-
-
 

@@ -33,16 +33,17 @@ def parse_exmp(serial_exmp):
                                                            "redict_weights": tf.FixedLenFeature([8], tf.float32),
                                                            "user_songTagids": tf.VarLenFeature(tf.int64),
                                                            "user_tagWeights": tf.VarLenFeature(tf.float32),
-
+                                                           ## 用户长短序列
+                                                           ## 长期90天
                                                            "Wanchorids_long": tf.VarLenFeature(tf.int64) ,
                                                            "Wanchorids_long_len": tf.FixedLenFeature([], tf.int64),
- 
+                                                           ## 短期30天
                                                            "Wanchorids_short": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_short_len": tf.FixedLenFeature([], tf.int64),
- 
+                                                           ## noclik
                                                            "Wanchorids_noclick": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_noclick_len": tf.FixedLenFeature([], tf.int64),
-
+                                                           ## effect
                                                            "Wanchorids_effect": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_effect_len": tf.FixedLenFeature([], tf.int64),
 
@@ -73,11 +74,10 @@ def parse_exmp(serial_exmp):
                                                            "hourId": tf.FixedLenFeature([1], tf.int64),
                                                            "dayOfWeek": tf.FixedLenFeature([1], tf.int64),
                                                            "live_position": tf.FixedLenFeature([1],tf.int64),
-                                                           "resource_position": tf.FixedLenFeature([1], tf.int64),
-
+                                                           "resource_position": tf.FixedLenFeature([1], tf.int64)
                                                            })
 
-    user_profile_basefea = feats['user_profile_basefea'] 
+    user_profile_basefea = feats['user_profile_basefea']  # 使用VarLenFeature读入的是一个sparse_tensor，用该函数进行转换
     user_appcate1 = feats["user_appcate1"]
     user_appcate2 = feats["user_appcate2"]
     user_RecAnchor = feats["user_RecAnchor"]
@@ -87,16 +87,17 @@ def parse_exmp(serial_exmp):
     redict_weights=feats["redict_weights"]
     user_songTagids=feats["user_songTagids"]
     user_tagWeights = feats["user_tagWeights"]
-
+    ## 用户长短序列
+    ## 长期90天
     Wanchorids_long=feats["Wanchorids_long"]
     Wanchorids_long_len = feats["Wanchorids_long_len"]
-
+    ## 短期30天
     Wanchorids_short = feats["Wanchorids_short"]
     Wanchorids_short_len = feats["Wanchorids_short_len"]
     ## noclick
     Wanchorids_noclick = feats["Wanchorids_noclick"]
     Wanchorids_noclick_len = feats["Wanchorids_noclick_len"]
-
+    ## effect
     Wanchorids_effect = feats["Wanchorids_effect"]
     Wanchorids_effect_len = feats["Wanchorids_effect_len"]
 
@@ -134,7 +135,6 @@ def parse_exmp(serial_exmp):
 
     label_ctcvr = feats["label_cvr"]
     label_ctr = feats["label_ctr"]
-
 
     return label_ctr, label_ctcvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
            Wanchorids_long ,Wanchorids_long_len, Wanchorids_short ,Wanchorids_short_len,Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
@@ -219,18 +219,18 @@ def eval_test_data(model, config, sess, file):
     y_label_ctr = []
     y_label_ctcvr = []
     loss_test = []
+    newUser_index = []
 
     user_id_list = []
     i=0
     try:
         while True:
-
             label_ctr, label_ctcvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
             Wanchorids_long, Wanchorids_long_len, Wanchorids_short, Wanchorids_short_len, Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
             anchor_profile_basefea, anchor_appcate1, anchor_appcate2, anchor_live_basefea, anchor_tagids, anchor_stats, anchor_stat_values, \
             user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
             day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids, \
-            hourId, dayOfWeek, redict_weights, live_position, anchor_tagidonehot, user_id, is_newAnchor, is_newUser = sess.run(next_element_test)
+            hourId, dayOfWeek, redict_weights, live_position, anchor_tagidonehot, user_id = sess.run(next_element_test)
 
             if (len(anchor_profile_basefea) < batch_size):
                 break
@@ -248,19 +248,20 @@ def eval_test_data(model, config, sess, file):
                          model.redict_weights_pre: redict_weights,
                          model.user_songTagids: user_songTagids,
                          model.user_tagWeights: user_tagWeights,
-
+                         ## 用户长短序列
+                         ## 长期90天
                          model.Wanchorids_long: Wanchorids_long,
                          model.Wanchorids_long_len_pre: Wanchorids_long_len,
-
+                         ## 短期30天
                          model.Wanchorids_short: Wanchorids_short,
                          model.Wanchorids_short_len_pre: Wanchorids_short_len,
-
+                         ## noclick
                          model.Wanchorids_noclick: Wanchorids_noclick,
                          model.Wanchorids_noclick_len_pre: Wanchorids_noclick_len,
-
+                         ## effect
                          model.Wanchorids_effect: Wanchorids_effect,
                          model.Wanchorids_effect_len_pre: Wanchorids_effect_len,
-
+                         ##主播
                          model.anchor_profile_basefea: anchor_profile_basefea,
                          model.anchor_appcate1: anchor_appcate1,
                          model.anchor_appcate2: anchor_appcate2,
@@ -276,7 +277,7 @@ def eval_test_data(model, config, sess, file):
                          model.anchor_tagWeights: anchor_tagWeights,
                          model.ctcvr_seq_len: ctcvr_seq_len,
                          model.anchor_tagidonehot: anchor_tagidonehot,
-
+                         ## 实时特征
                          model.realtime_ids: realtime_ids,
                          model.realtime_values: realtime_values,
                          model.fea_sim: fea_sim,
@@ -288,22 +289,19 @@ def eval_test_data(model, config, sess, file):
                          model.label_ctcvr: label_ctcvr,
 
                          model.keep_prob: 1.0,
-                         model.train_phase: False,
+                         model.train_phase: False
                          }
 
-            temp_pctr, temp_pcvr, temp_pctcvr = sess.run((model.pctr, model.pcvr, model.pctcvr), feed_dict=feed_dict)
+            temp_pctr, temp_pcvr, temp_pctcvr, temp_newUser_index = sess.run((model.pctr, model.pcvr, model.pctcvr, model.newUser_index), feed_dict=feed_dict)
             y_pctr.extend(temp_pctr)
             y_pcvr.extend(temp_pcvr)
             y_pctcvr.extend(temp_pctcvr)
+            newUser_index.extend(temp_newUser_index)
             # loss_test.append(temp_loss)
             # user_id_list.extend(user_id.reshape(len(user_id)))
     except  Exception as e:
         print("error: ", e)
         pass
-
-
-    auc_ctr = roc_auc_score(y_label_ctr, y_pctr)
-    auc_ctrcvr = roc_auc_score(y_label_ctcvr, y_pctcvr)
 
     print("------------------------------------------------------------------------------------------")
     print("max ctr: ", max(y_pctr))
@@ -323,11 +321,37 @@ def eval_test_data(model, config, sess, file):
     print("debug cvr >0.8 : ", debug_cvr)
     print("debug ctcvr >0.8 : ", debug_ctcvr)
 
+    y_label_ctr = np.array(y_label_ctr)
+    y_pctr = np.array(y_pctr)
+
+    y_label_ctcvr = np.array(y_label_ctcvr)
+    y_pctcvr = np.array(y_pctcvr)
+    user_id_list = np.array(user_id_list)
+
+    # 计算新用户AUC
+    auc_ctr_new = roc_auc_score(y_label_ctr[newUser_index], y_pctr[newUser_index])
+    auc_ctrcvr_new = roc_auc_score(y_label_ctcvr[newUser_index], y_pctcvr[newUser_index])
+    gauc_ctcvr_new =cal_group_auc(y_label_ctcvr[newUser_index],y_pctcvr[newUser_index], user_id_list[newUser_index])
+    gauc_ctr_new = cal_group_auc(y_label_ctr[newUser_index], y_pctr[newUser_index], user_id_list[newUser_index])
+    print("new user, CTR AUC is {0}, CTCVR AUC is {1}, CTR GAUC is {2}, CTCVR GAUC is {3}".format(auc_ctr_new, auc_ctrcvr_new, gauc_ctr_new, gauc_ctcvr_new))
+
+
+    # 计算老用户AUC
+    oldUser_index = list(map(lambda x: not x, newUser_index))
+    auc_ctr_old = roc_auc_score(y_label_ctr[oldUser_index], y_pctr[oldUser_index])
+    auc_ctrcvr_old = roc_auc_score(y_label_ctcvr[oldUser_index], y_pctcvr[oldUser_index])
+    gauc_ctcvr_old =cal_group_auc(y_label_ctcvr[oldUser_index],y_pctcvr[oldUser_index], user_id_list[oldUser_index])
+    gauc_ctr_old = cal_group_auc(y_label_ctr[oldUser_index], y_pctr[oldUser_index], user_id_list[oldUser_index])
+    print("old user, CTR AUC is {0}, CTCVR AUC is {1}, CTR GAUC is {2}, CTCVR GAUC is {3}".format(auc_ctr_old, auc_ctrcvr_old, gauc_ctr_old, gauc_ctcvr_old))
+
+
     ## 计算GAUC
-    gauc_ctcvr=cal_group_auc(y_label_ctcvr,y_pctcvr, user_id_list )
+    auc_ctr = roc_auc_score(y_label_ctr, y_pctr)
+    auc_ctrcvr = roc_auc_score(y_label_ctcvr, y_pctcvr)
+    gauc_ctcvr=cal_group_auc(y_label_ctcvr,y_pctcvr, user_id_list)
     gauc_ctr = cal_group_auc(y_label_ctr, y_pctr, user_id_list)
     # gauc_cvr=cal_group_auc(y_label_ctcvr,y_pcvr,user_id_list)
-    return auc_ctr, auc_ctrcvr, len(y_label_ctr),y_label_ctr.count(1), y_label_ctcvr.count(1), gauc_ctr, gauc_ctcvr
+    return auc_ctr, auc_ctrcvr, len(y_label_ctr), y_label_ctr.tolist().count(1), y_label_ctcvr.tolist().count(1), gauc_ctr, gauc_ctcvr
 
 
 def make_train_feed_dict(model, batch):
@@ -339,19 +363,20 @@ def make_train_feed_dict(model, batch):
                  model.user_RecAnchor: batch[5],
                  model.user_statIds: batch[6],
                  model.user_topHourIds: batch[7],
-
+                 ## 用户长短序列
+                 ## 长期90天
                  model.Wanchorids_long: batch[8],
                  model.Wanchorids_long_len_pre: batch[9],
-
+                 ## 短期30天
                  model.Wanchorids_short: batch[10],
                  model.Wanchorids_short_len_pre: batch[11],
-
+                 ## noclick
                  model.Wanchorids_noclick: batch[12],
                  model.Wanchorids_noclick_len_pre: batch[13],
-
+                 ## effect
                  model.Wanchorids_effect: batch[14],
                  model.Wanchorids_effect_len_pre: batch[15],
-
+                 ##主播
                  model.anchor_profile_basefea: batch[16],
                  model.anchor_appcate1: batch[17],
                  model.anchor_appcate2: batch[18],
@@ -384,10 +409,8 @@ def make_train_feed_dict(model, batch):
                  model.label_ctcvr: batch[1],
 
                  model.keep_prob: 0.5,
-                 model.train_phase: True,
+                 model.train_phase: True
                  }
-
-
     return feed_dict
 
 
@@ -403,8 +426,11 @@ def run_train_step(model, sess, batch):
         'vis_rec_loss': model.vis_rec_loss,
         'sem_rec_loss': model.sem_rec_loss,
         'align_loss' : model.align_loss,
-        'newAnchor_index' :model.newAnchor_index,
-        'newUser_index':model.newUser_index
+        'newUser_index' :model.newUser_index,
+        'log': model.log,
+        'log_label': model.log_label,
+        'pre_ctr': model.pctr,
+        'pre_ctcvr':model.pctcvr
     }
     return sess.run(to_return, feed_dict)
 
@@ -538,7 +564,7 @@ def _bulid_dnn_resnet_v1(X_input, deep_layers,l2_reg_lambda, batch_norm, train_p
             if batch_norm:
                 dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
                                            scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay) 
+                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
             dnn_out=tf.concat([dnn_out, x_list[i]],axis=-1)
             dnn_out = tf.nn.dropout(dnn_out,keep_prob)  # Apply Dropout after all BN layers and set dropout=0.8(drop_ratio=0.2)
             x_list.append(dnn_out)
@@ -556,7 +582,7 @@ def _bulid_dnn_resnet_v2(X_input, deep_layers,l2_reg_lambda, batch_norm, train_p
             if batch_norm:
                 dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
                                            scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay)  
+                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
             if i==0:
                 dnn_out=tf.concat([dnn_out, x_list[i]],axis=-1)
             else:
@@ -590,7 +616,8 @@ def _bulid_dnn_withPrelu(X_input, deep_layers,l2_reg_lambda, batch_norm, train_p
             if batch_norm:
                 dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
                                            scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay)  
+                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
+
             dnn_out = tf.nn.dropout(dnn_out,keep_prob)  # Apply Dropout after all BN layers and set dropout=0.8(drop_ratio=0.2)
 
 
@@ -712,7 +739,7 @@ def raw_deep_match(item_his_eb, context_his_eb, keys_length, mid_his_batch, EMBE
 
         # mask
         bool_mask = tf.sequence_mask(keys_length, tf.shape(item_his_eb)[1])  # [B, T]
-        bool_mask = tf.reverse(bool_mask, [1])  
+        bool_mask = tf.reverse(bool_mask, [1])  ## 因为最近发生行为的主播在 最后一个
         key_masks = tf.expand_dims(bool_mask, 1)  # B,1,T
         paddings = tf.ones_like(scores) * (-2 ** 32 + 1)
         scores = tf.where(key_masks, scores, paddings)  # B,1,T
@@ -722,7 +749,7 @@ def raw_deep_match(item_his_eb, context_his_eb, keys_length, mid_his_batch, EMBE
         scores_tile = tf.reshape(scores_tile, [-1, tf.shape(scores)[-1], tf.shape(scores)[-1]])  # B, T, T
         diag_vals = tf.ones_like(scores_tile)  # B, T, T
         # tril = tf.contrib.linalg.LinearOperatorTriL(diag_vals).to_dense()
-        tril = tf.linalg.LinearOperatorLowerTriangular(diag_vals).to_dense() 
+        tril = tf.linalg.LinearOperatorLowerTriangular(diag_vals).to_dense()  ## 将对角矩阵上方置为0
         paddings = tf.ones_like(tril) * (-2 ** 32 + 1)
         scores_tile = tf.where(tf.equal(tril, 0), paddings, scores_tile)  # B, T, T
         scores_tile = tf.nn.softmax(scores_tile)  # B, T, T
@@ -732,20 +759,20 @@ def raw_deep_match(item_his_eb, context_his_eb, keys_length, mid_his_batch, EMBE
         dnn_layer1 = prelu(dnn_layer1, 'dm_fcn_1')  # B, T, E
 
         # target mask
-        user_vector = dnn_layer1[:, -1, :]  
+        user_vector = dnn_layer1[:, -1, :]  ## 学习了整个T 的user embeding
 
         match_mask_raw = tf.expand_dims(keys_length, -1)  # [B，1]
-        match_mask_bool = tf.greater(match_mask_raw, 2) 
+        match_mask_bool = tf.greater(match_mask_raw, 2)  ## 获得true false 的矩阵；要求用户序列至少为3个,才去计算辅助loss 要不然没有意义
         match_mask = tf.where(match_mask_bool, tf.ones_like(match_mask_raw, dtype=tf.float32),
                               tf.zeros(shape=tf.shape(match_mask_raw), dtype=tf.float32))  # [B,1]
 
-       
-        user_vector2 = dnn_layer1[:, -2, :] * match_mask 
-        ## tf.reshape(match_mask, [-1, tf.shape(match_mask)[1], 1])[:, -2, :] 
+        ##错误隐患，如果节点应用了下面 user_vector2, 就会报错，应该可能部分用户序列长度为1 导致index -2 是错误的；目前线上不会报错，因为graph 中不利用loss 所以不会保存错误节点。
+        user_vector2 = dnn_layer1[:, -2, :] * match_mask  ## Ut-1 在T-1 的user embedding
+        ## tf.reshape(match_mask, [-1, tf.shape(match_mask)[1], 1])[:, -2, :]  这部分我认为是阿里同学的trick控制部分用户序列少的不进入计算，其他序列长的 match_mask 和 mask 是一致的
         num_sampled = 2000
         loss = tf.reduce_mean(tf.nn.sampled_softmax_loss(weights=item_vectors,
                                                          biases=item_biases,
-                                                         labels=tf.cast(tf.reshape(mid_his_batch[:, -1], [-1, 1]),tf.int64), 
+                                                         labels=tf.cast(tf.reshape(mid_his_batch[:, -1], [-1, 1]),tf.int64),  ## 最近一次行为
                                                          inputs=user_vector2,
                                                          num_sampled=num_sampled,
                                                          num_classes=n_mid,
@@ -913,6 +940,113 @@ def _textcnn(vocab_size, embedding_size, batch_char,filter_sizes, num_filters, m
 
         return h_pool_flat
 
+
+def _build_extreme_FM(nn_input, filed_size,embedding_size, cross_layer_sizes, res=False, direct=False, bias=False, reduce_D=False, f_dim=2):
+    hidden_nn_layers = []
+    field_nums = []
+    final_len = 0
+    field_num = filed_size
+    nn_input = tf.reshape(nn_input, shape=[-1, int(field_num), embedding_size])
+    field_nums.append(int(field_num))
+    hidden_nn_layers.append(nn_input)
+    final_result = []
+    split_tensor0 = tf.split(hidden_nn_layers[0], embedding_size * [1], 2)  # D*B*F*1
+    with tf.variable_scope("exfm_part", initializer=tf.truncated_normal_initializer(stddev=0.01)) as scope:
+        for idx, layer_size in enumerate(cross_layer_sizes):
+            split_tensor = tf.split(hidden_nn_layers[-1], embedding_size * [1], 2)
+            dot_result_m = tf.matmul(split_tensor0, split_tensor,
+                                     transpose_b=True)  # 如果idx=0  dot_result_m shape : D*B*F*F
+            dot_result_o = tf.reshape(dot_result_m, shape=[embedding_size, -1,
+                                                           field_nums[0] * field_nums[-1]])  ##  shape : D * B * (F*F)
+            dot_result = tf.transpose(dot_result_o, perm=[1, 0, 2])  ##  shape : B*D* (F*F)
+
+            if reduce_D:
+                filters0 = tf.get_variable("f0_" + str(idx),
+                                           shape=[1, layer_size, field_nums[0], f_dim],
+                                           dtype=tf.float32)
+                filters_ = tf.get_variable("f__" + str(idx),
+                                           shape=[1, layer_size, f_dim, field_nums[-1]],
+                                           dtype=tf.float32)
+                filters_m = tf.matmul(filters0, filters_)
+                filters_o = tf.reshape(filters_m, shape=[1, layer_size, field_nums[0] * field_nums[-1]])
+                filters = tf.transpose(filters_o, perm=[0, 2, 1])
+            else:
+                filters = tf.get_variable(name="f_" + str(idx),
+                                          shape=[1, field_nums[-1] * field_nums[0], layer_size],
+                                          dtype=tf.float32)
+            # dot_result = tf.transpose(dot_result, perm=[0, 2, 1])
+            curr_out = tf.nn.conv1d(dot_result, filters=filters, stride=1, padding='VALID')  # B*D* (Layer_size)
+
+            # BIAS ADD
+            if bias:
+                # hparams.logger.info("bias")
+                b = tf.get_variable(name="f_b" + str(idx),
+                                    shape=[layer_size],
+                                    dtype=tf.float32,
+                                    initializer=tf.zeros_initializer())
+                curr_out = tf.nn.bias_add(curr_out, b)
+
+
+            curr_out = tf.identity(curr_out)
+
+            curr_out = tf.transpose(curr_out, perm=[0, 2, 1])  # B*(Layer_size) *D
+
+            if direct:
+                direct_connect = curr_out
+                next_hidden = curr_out
+                final_len += layer_size
+                field_nums.append(int(layer_size))
+
+            else:
+                if idx != len(cross_layer_sizes) - 1:
+                    next_hidden, direct_connect = tf.split(curr_out, 2 * [int(layer_size / 2)], 1)
+                    final_len += int(layer_size / 2)
+                else:
+                    direct_connect = curr_out
+                    next_hidden = 0
+                    final_len += layer_size
+                field_nums.append(int(layer_size / 2))
+
+            final_result.append(direct_connect)  ##  (多少个cross layers ) *  B * (Layer_size)  * D
+            hidden_nn_layers.append(next_hidden)
+
+        result = tf.concat(final_result, axis=1)  ## B * (num_cross * Layer_size) *D
+        result = tf.reduce_sum(result, -1)  ## B * (num_cross * Layer_size)
+        if res:
+            w_nn_output1 = tf.get_variable(name='w_nn_output1',
+                                           shape=[final_len, 128],
+                                           dtype=tf.float32)
+            b_nn_output1 = tf.get_variable(name='b_nn_output1',
+                                           shape=[128],
+                                           dtype=tf.float32,
+                                           initializer=tf.zeros_initializer())
+
+            exFM_out0 = tf.nn.xw_plus_b(result, w_nn_output1, b_nn_output1)
+            exFM_out1 = tf._active_layer(logit=exFM_out0,
+                                           activation="relu",
+                                           )
+            w_nn_output2 = tf.get_variable(name='w_nn_output2',
+                                           shape=[128 + final_len, 1],
+                                           dtype=tf.float32)
+            b_nn_output2 = tf.get_variable(name='b_nn_output2',
+                                           shape=[1],
+                                           dtype=tf.float32,
+                                           initializer=tf.zeros_initializer())
+
+            exFM_in = tf.concat([exFM_out1, result], axis=1, name="user_emb")
+            exFM_out = tf.nn.xw_plus_b(exFM_in, w_nn_output2, b_nn_output2)
+
+        else:
+            w_nn_output = tf.get_variable(name='w_nn_output',
+                                          shape=[final_len, 1],
+                                          dtype=tf.float32)
+            b_nn_output = tf.get_variable(name='b_nn_output',
+                                          shape=[1],
+                                          dtype=tf.float32,
+                                          initializer=tf.zeros_initializer())
+
+            exFM_out = tf.nn.xw_plus_b(result, w_nn_output, b_nn_output)
+    return exFM_out
 
 def din_attention(queries, keys, keys_length):
   '''

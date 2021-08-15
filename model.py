@@ -15,7 +15,7 @@ def _bulid_dnn(X_input, deep_layers,l2_reg_lambda, batch_norm, train_phase,keep_
             if batch_norm:
                 dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
                                            scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay) 
+                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
 
             dnn_out = tf.nn.dropout(dnn_out,keep_prob)  # Apply Dropout after all BN layers and set dropout=0.8(drop_ratio=0.2)
     return dnn_out
@@ -172,7 +172,6 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
             x_for_sigmoid = tf.reshape(x_for_sigmoid,
                                        [-1, (self.realtime_values_size + 2) * self.embedding_size])
 
-
             DNN_Input= tf.concat([DNN_Input, self.x_dmr, self.redict_weights], axis=-1)
             x_concat_deep = tf.nn.dropout(DNN_Input, self.keep_prob)
             with tf.name_scope("CVR_Task"):
@@ -211,7 +210,7 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
                 self.pctcvr = self.pctr * self.pcvr
 
             # ------bulid loss------
-            ctr_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=y_ctr, labels=self.label_ctr))
+            ctr_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=y_ctr, labels= self.label_ctr))
             cvr_loss = tf.reduce_mean(tf.losses.log_loss(predictions=self.pctcvr, labels=self.label_ctcvr))
             if (self.is_aux):
                 self.loss = self.ctr_task_wgt * ctr_loss + (1 - self.ctr_task_wgt) * cvr_loss + 0.5 * (
@@ -220,14 +219,14 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
                 self.loss = self.ctr_task_wgt * ctr_loss + (1 - self.ctr_task_wgt) * cvr_loss
 
         self.params1 = [param for param in tf.trainable_variables() if 'user_ZSL' not in param.name]
-        d_optimizer1 = tf.train.AdamOptimizer(self.learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8)
         self.global_step1 = tf.Variable(0, name="global_step1", trainable=False)
+        d_optimizer1 = tf.train.AdamOptimizer(self.learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8)
         grads_and_vars1 = d_optimizer1.compute_gradients(self.loss, self.params1, aggregation_method=2)
         self.train_op1 = d_optimizer1.apply_gradients(grads_and_vars1, global_step=self.global_step1)
 
         self.params2 = [param for param in tf.trainable_variables() if 'user_ZSL' in param.name]
-        d_optimizer2 = tf.train.AdamOptimizer(0.5*self.learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8)
         self.global_step2 = tf.Variable(0, name="global_step2", trainable=False)
+        d_optimizer2 = tf.train.AdamOptimizer(0.5*self.learning_rate, beta1=0.9, beta2=0.999, epsilon=1e-8)
         grads_and_vars2 = d_optimizer2.compute_gradients(self.rec_loss, self.params2, aggregation_method=2)
         self.train_op2 = d_optimizer2.apply_gradients(grads_and_vars2, global_step=self.global_step2)
 
