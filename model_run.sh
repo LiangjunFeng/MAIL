@@ -7,7 +7,7 @@ python="/app/anaconda3/bin//python"
 train_date="$1"
 echo "train date :  ${train_date}"
 
-model_pyfile_snpfinetuning="/root/NetEase/HomePage/online/main.py"
+model_pyfile_snpfinetuning="main.py"
 
 function final_bash()
 {
