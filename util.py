@@ -45,28 +45,28 @@ class DSTNEmbeddingLayerSnpShot(object):
         return self.vis_rec_loss + self.align_loss + self.sem_rec_loss
 
     def make_semantic_feature(self):
-        user_profile_basefea_att = attention(self.user_profile_basefea_embeddings, 128, return_alphas=False)
-        row = tf.shape(user_profile_basefea_att)[0]
-        user_appcate1_att = tf.reshape(self.user_appcate1_embeddings, [row, -1])
-        user_appcate2_att = tf.reshape(self.user_appcate2_embeddings, [row, -1])
-        anchor_profile_basefea_att = attention(self.anchor_profile_basefea_embeddings, 128, return_alphas=False)
-        anchor_appcate1_att = tf.reshape(self.anchor_appcate1_embeddings, [row, -1])
-        anchor_appcate2_att = tf.reshape(self.anchor_appcate2_embeddings, [row, -1])
+        user_profile_0_att = attention(self.user_profile_0_embeddings, 128, return_alphas=False)
+        row = tf.shape(user_profile_0_att)[0]
+        user_profile_1_att = tf.reshape(self.user_profile_1_embeddings, [row, -1])
+        user_profile_2_att = tf.reshape(self.user_profile_2_embeddings, [row, -1])
+        anchor_profile_0_att = attention(self.anchor_profile_0_embeddings, 128, return_alphas=False)
+        anchor_profile_1_att = tf.reshape(self.anchor_profile_1_embeddings, [row, -1])
+        anchor_profile_2_att = tf.reshape(self.anchor_profile_2_embeddings, [row, -1])
         anchor_stat_att = attention(self.anchor_stat_embeddings, 128, return_alphas=False)
         day_ctrid_att = attention(self.day_ctrid_embeddings, 128, return_alphas=False)
         day_cvrid_att = attention(self.day_cvrid_embeddings, 128, return_alphas=False)
         userSongTag_att = tf.reshape(self.userSongTag_embeddings, [row, -1])
         anchorSongTag_att = tf.reshape(self.anchorSongTag_embeddings, [row, -1])
-        anchor_live_basefea_att = attention(self.anchor_livebasefea_embeddings, 128, return_alphas=False)
+        anchor_live_profile_0_att = attention(self.anchor_live_profile_0_embeddings, 128, return_alphas=False)
         realtime_ids_att = attention(self.realtime_ids_embeddings, 128, return_alphas=False)
         hour_att = tf.reshape(self.hour_embeddings, [row, -1])
-        anchor_tagids_att = tf.reshape(self.anchor_tagids_embeddings, [row, -1])
+        anchor_live_profile_1_att = tf.reshape(self.anchor_live_profile_1_embeddings, [row, -1])
         livePosition_att = tf.reshape(self.livePosition_embeddings, [row, -1])
         Day_att = tf.reshape(self.Day_embeddings, [row, -1])
 
-        semantic_att_embedding = tf.concat([user_profile_basefea_att, user_appcate1_att, user_appcate2_att, anchor_profile_basefea_att,
-                                                 anchor_appcate1_att, anchor_appcate2_att, anchor_stat_att, day_ctrid_att, day_cvrid_att, userSongTag_att, anchorSongTag_att,
-                                                 anchor_live_basefea_att, realtime_ids_att, hour_att, anchor_tagids_att, livePosition_att, Day_att], axis=1)
+        semantic_att_embedding = tf.concat([user_profile_0_att, user_profile_1_att, user_profile_2_att, anchor_profile_0_att,
+                                                 anchor_profile_1_att, anchor_profile_2_att, anchor_stat_att, day_ctrid_att, day_cvrid_att, userSongTag_att, anchorSongTag_att,
+                                                 anchor_live_profile_0_att, realtime_ids_att, hour_att, anchor_live_profile_1_att, livePosition_att, Day_att], axis=1)
 
         day_ctr_value = tf.reshape(tf.reduce_sum(tf.reshape(self.day_ctr_value, shape=[row, -1]),1), shape=[row, 1])
         day_cvr_value = tf.reshape(tf.reduce_sum(tf.reshape(self.day_cvr_value, shape=[row, -1]),1), shape=[row, 1])
@@ -79,14 +79,14 @@ class DSTNEmbeddingLayerSnpShot(object):
         row =  tf.shape(self.userRecanchor_embeddings_pre)[0]
         userRecanchor_embeddings_att = tf.reshape(self.userRecanchor_embeddings_pre, [row, -1])
         user_stat_att = attention(self.user_stat_embedding_pre, 128, return_alphas=False)
-        user_topHour_att = attention(self.user_topHour_embedding_pre, 128, return_alphas=False)
+        user_profile_3_att = attention(self.user_profile_3_embedding_pre, 128, return_alphas=False)
         anchor_his_fea_long_att = attention(self.Wanchorids_long_embeddings_pre, 128, return_alphas=False)
         anchor_his_fea_short_att = attention(self.Wanchorids_short_embeddings_pre, 128, return_alphas=False)
         anchor_his_fea_noclick_att = attention(self.Wanchorids_noclick_embeddings_pre, 128, return_alphas=False)
         anchor_his_fea_effect_att = attention(self.Wanchorids_effect_embeddings_pre, 128, return_alphas=False)
 
         visual_att_embedding = tf.concat(
-            [userRecanchor_embeddings_att, user_stat_att, user_topHour_att, anchor_his_fea_long_att,
+            [userRecanchor_embeddings_att, user_stat_att, user_profile_3_att, anchor_his_fea_long_att,
              anchor_his_fea_short_att, anchor_his_fea_noclick_att, anchor_his_fea_effect_att], axis = 1)
         long_len = tf.cast(tf.reshape(self.Wanchorids_long_len_pre,[-1,1]), dtype=tf.float32 )
         short_len = tf.cast(tf.reshape(self.Wanchorids_short_len_pre,[-1,1]), dtype=tf.float32)
@@ -112,7 +112,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         return align_loss
 
     def generate_features(self, semantic_hidden, visual_hidden):
-        self.userRecanchor_embeddings_rec_bysem, self.user_stat_embedding_rec_bysem, self.user_topHour_embedding_rec_bysem, \
+        self.userRecanchor_embeddings_rec_bysem, self.user_stat_embedding_rec_bysem, self.user_profile_3_rec_bysem, \
         self.Wanchorids_long_embeddings_rec_bysem, self.Wanchorids_long_len_rec_bysem, self.Wanchorids_short_embeddings_rec_bysem, \
         self.Wanchorids_short_len_rec_bysem, self.Wanchorids_noclick_embeddings_rec_bysem, self.Wanchorids_noclick_len_rec_bysem, \
         self.Wanchorids_effect_embeddings_rec_bysem, self.Wanchorids_effect_len_rec_bysem, self.redict_weights_rec_bysem, \
@@ -121,14 +121,14 @@ class DSTNEmbeddingLayerSnpShot(object):
         self.Wanchorids_short_len_rec_byvis, self.Wanchorids_noclick_embeddings_rec_byvis, self.Wanchorids_noclick_len_rec_byvis, \
         self.Wanchorids_effect_embeddings_rec_byvis, self.Wanchorids_effect_len_rec_byvis, self.redict_weights_rec_byvis = self.generate_visual_features(semantic_hidden, visual_hidden)
 
-        self.user_profile_basefea_rec_bysem, self.user_appcate1_rec_bysem, self.user_appcate2_rec_bysem, self.anchor_profile_basefea_rec_bysem, \
-        self.anchor_appcate1_rec_bysem, self.anchor_appcate2_rec_bysem, self.anchor_stat_rec_bysem, self.anchor_stat_values_rec_bysem, \
-        self.userSongTag_rec_bysem, self.fea_sim_rec_bysem, self.anchor_livebasefea_rec_bysem, self.realtime_values_rec_bysem, self.realtime_ids_rec_bysem, \
-        self.hourId_rec_bysem, self.anchor_tagids_rec_bysem, self.Day_rec_bysem, self.live_position_rec_bysem, self.user_profile_basefea_rec_byvis, \
-        self.user_appcate1_rec_byvis, self.user_appcate2_rec_byvis, self.anchor_profile_basefea_rec_byvis, self.anchor_appcate1_rec_byvis, \
-        self.anchor_appcate2_rec_byvis, self.anchor_stat_rec_byvis, self.anchor_stat_values_rec_byvis, self.userSongTag_rec_byvis, self.fea_sim_rec_byvis, \
-        self.anchor_livebasefea_rec_byvis, self.realtime_values_rec_byvis, self.realtime_ids_rec_byvis, self.hourId_rec_byvis, \
-        self.anchor_tagids_rec_byvis, self.Day_rec_byvis, self.live_position_rec_byvis = self.generate_semantic_features(semantic_hidden,  visual_hidden)
+        self.user_profile_0_rec_bysem, self.user_profile_1_rec_bysem, self.user_profile_2_rec_bysem, self.anchor_profile_0_rec_bysem, \
+        self.anchor_profile_1_rec_bysem, self.anchor_profile_2_rec_bysem, self.anchor_stat_rec_bysem, self.anchor_stat_values_rec_bysem, \
+        self.userSongTag_rec_bysem, self.fea_sim_rec_bysem, self.anchor_live_profile_0_rec_bysem, self.realtime_values_rec_bysem, self.realtime_ids_rec_bysem, \
+        self.hourId_rec_bysem, self.anchor_live_profile_1_rec_bysem, self.Day_rec_bysem, self.live_position_rec_bysem, self.user_profile_0_rec_byvis, \
+        self.user_profile_1_rec_byvis, self.user_profile_2_rec_byvis, self.anchor_profile_0_rec_byvis, self.anchor_profile_1_rec_byvis, \
+        self.anchor_profile_2_rec_byvis, self.anchor_stat_rec_byvis, self.anchor_stat_values_rec_byvis, self.userSongTag_rec_byvis, self.fea_sim_rec_byvis, \
+        self.anchor_live_profile_0_rec_byvis, self.realtime_values_rec_byvis, self.realtime_ids_rec_byvis, self.hourId_rec_byvis, \
+        self.anchor_live_profile_1_rec_byvis, self.Day_rec_byvis, self.live_position_rec_byvis = self.generate_semantic_features(semantic_hidden,  visual_hidden)
 
     def generate_feature_type_embedding(self, semantic_hidden, visual_hidden, num):
         row = tf.shape(semantic_hidden)[0]
@@ -155,7 +155,7 @@ class DSTNEmbeddingLayerSnpShot(object):
     def generate_visual_features(self, semantic_hidden,  visual_hidden):
         userRecanchor_embeddings_rec1, userRecanchor_embeddings_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
         user_stat_embedding_rec1, user_stat_embedding_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 12)
-        user_topHour_embedding_rec1, user_topHour_embedding_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 6)
+        user_profile_3_embedding_rec1, user_profile_3_embedding_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 6)
         Wanchorids_long_embeddings_rec1, Wanchorids_long_embeddings_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 100)
         Wanchorids_long_len_rec1, Wanchorids_long_len_rec2 = self.generate_feature_type_len(semantic_hidden, visual_hidden)
         Wanchorids_short_embeddings_rec1, Wanchorids_short_embeddings_rec2 =  self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 100)
@@ -166,59 +166,59 @@ class DSTNEmbeddingLayerSnpShot(object):
         Wanchorids_effect_len_rec1, Wanchorids_effect_len_rec2  = self.generate_feature_type_len(semantic_hidden, visual_hidden)
         redict_weights_rec1, redict_weights_rec2 = self.generate_feature_type_values(semantic_hidden, visual_hidden, 8)
 
-        return userRecanchor_embeddings_rec1, user_stat_embedding_rec1, user_topHour_embedding_rec1, Wanchorids_long_embeddings_rec1, Wanchorids_long_len_rec1, \
+        return userRecanchor_embeddings_rec1, user_stat_embedding_rec1, user_profile_3_embedding_rec1, Wanchorids_long_embeddings_rec1, Wanchorids_long_len_rec1, \
                Wanchorids_short_embeddings_rec1, Wanchorids_short_len_rec1, Wanchorids_noclick_embeddings_rec1, Wanchorids_noclick_len_rec1, Wanchorids_effect_embeddings_rec1, \
-               Wanchorids_effect_len_rec1, redict_weights_rec1, userRecanchor_embeddings_rec2, user_stat_embedding_rec2, user_topHour_embedding_rec2, Wanchorids_long_embeddings_rec2, \
+               Wanchorids_effect_len_rec1, redict_weights_rec1, userRecanchor_embeddings_rec2, user_stat_embedding_rec2, user_profile_3_embedding_rec2, Wanchorids_long_embeddings_rec2, \
                Wanchorids_long_len_rec2, Wanchorids_short_embeddings_rec2, Wanchorids_short_len_rec2, Wanchorids_noclick_embeddings_rec2, Wanchorids_noclick_len_rec2, \
                Wanchorids_effect_embeddings_rec2, Wanchorids_effect_len_rec2, redict_weights_rec2
 
     def generate_semantic_features(self, semantic_hidden, visual_hidden):
-        user_profile_basefea_rec1,user_profile_basefea_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 8)
-        user_appcate1_rec1, user_appcate1_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
-        user_appcate2_rec1, user_appcate2_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
-        anchor_profile_basefea_rec1, anchor_profile_basefea_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 7)
-        anchor_appcate1_rec1, anchor_appcate1_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
-        anchor_appcate2_rec1, anchor_appcate2_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
+        user_profile_0_rec1, user_profile_0_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 8)
+        user_profile_1_rec1, user_profile_1_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
+        user_profile_2_rec1, user_profile_2_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
+        anchor_profile_0_rec1, anchor_profile_0_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 7)
+        anchor_profile_1_rec1, anchor_profile_1_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
+        anchor_profile_2_rec1, anchor_profile_2_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
         anchor_stat_rec1, anchor_stat_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 16)
         anchor_stat_values_rec1, anchor_stat_values_rec2 = self.generate_feature_type_values(semantic_hidden, visual_hidden, 15)
         userSongTag_rec1, userSongTag_rec2 =  self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
         fea_sim_rec1, fea_sim_rec2 = self.generate_feature_type_values(semantic_hidden, visual_hidden, 2)
-        anchor_livebasefea_rec1, anchor_livebasefea_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 4)
+        anchor_live_profile_0_rec1, anchor_live_profile_0_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 4)
         realtime_values_rec1, realtime_values_rec2 = self.generate_feature_type_values(semantic_hidden, visual_hidden, 22)
         realtime_ids_rec1, realtime_ids_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 22)
         hourId_rec1, hourId_rec2  = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
-        anchor_tagids_rec1, anchor_tagids_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
+        anchor_live_profile_1_rec1, anchor_live_profile_1_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
         Day_rec1, Day_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
         live_position_rec1, live_position_rec2 = self.generate_feature_type_embedding(semantic_hidden, visual_hidden, 1)
-        return user_profile_basefea_rec1, user_appcate1_rec1, user_appcate2_rec1, anchor_profile_basefea_rec1, anchor_appcate1_rec1, anchor_appcate2_rec1, \
-               anchor_stat_rec1, anchor_stat_values_rec1, userSongTag_rec1, fea_sim_rec1, anchor_livebasefea_rec1, realtime_values_rec1, realtime_ids_rec1, \
-               hourId_rec1, anchor_tagids_rec1, Day_rec1, live_position_rec1, user_profile_basefea_rec2, user_appcate1_rec2, user_appcate2_rec2, anchor_profile_basefea_rec2, \
-               anchor_appcate1_rec2, anchor_appcate2_rec2, anchor_stat_rec2, anchor_stat_values_rec2, userSongTag_rec2, fea_sim_rec2, anchor_livebasefea_rec2, \
-               realtime_values_rec2, realtime_ids_rec2, hourId_rec2, anchor_tagids_rec2, Day_rec2, live_position_rec2
+        return user_profile_0_rec1, user_profile_1_rec1, user_profile_2_rec1, anchor_profile_0_rec1, anchor_profile_1_rec1, anchor_profile_2_rec1, \
+               anchor_stat_rec1, anchor_stat_values_rec1, userSongTag_rec1, fea_sim_rec1, anchor_live_profile_0_rec1, realtime_values_rec1, realtime_ids_rec1, \
+               hourId_rec1, anchor_live_profile_1_rec1, Day_rec1, live_position_rec1, user_profile_0_rec2, user_profile_1_rec2, user_profile_2_rec2, anchor_profile_0_rec2, \
+               anchor_profile_1_rec2, anchor_profile_2_rec2, anchor_stat_rec2, anchor_stat_values_rec2, userSongTag_rec2, fea_sim_rec2, anchor_live_profile_0_rec2, \
+               realtime_values_rec2, realtime_ids_rec2, hourId_rec2, anchor_live_profile_1_rec2, Day_rec2, live_position_rec2
 
     def compute_sem_rec_loss(self):
         row = tf.shape(self.newUser_index)[0]
         oldUser_index = tf.reshape(tf.equal(self.newUser_index, False),[row])
         count = tf.reduce_sum(tf.cast(oldUser_index,tf.int32),axis=0)
         rec_stack = tf.concat(
-            [self.user_profile_basefea_rec_bysem[oldUser_index], self.user_appcate1_rec_bysem[oldUser_index], self.user_appcate2_rec_bysem[oldUser_index], self.anchor_profile_basefea_rec_bysem[oldUser_index],
-             self.anchor_appcate1_rec_bysem[oldUser_index], self.anchor_appcate2_rec_bysem[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index],  self.userSongTag_rec_bysem[oldUser_index],
-             self.anchor_livebasefea_rec_bysem[oldUser_index], self.realtime_ids_rec_bysem[oldUser_index], self.hourId_rec_bysem[oldUser_index], self.anchor_tagids_rec_bysem[oldUser_index], self.Day_rec_bysem[oldUser_index],
-             self.live_position_rec_bysem[oldUser_index], self.user_profile_basefea_rec_byvis[oldUser_index], self.user_appcate1_rec_byvis[oldUser_index], self.user_appcate2_rec_byvis[oldUser_index],
-             self.anchor_profile_basefea_rec_byvis[oldUser_index], self.anchor_appcate1_rec_byvis[oldUser_index], self.anchor_appcate2_rec_byvis[oldUser_index], self.anchor_stat_rec_byvis[oldUser_index],
-             self.userSongTag_rec_byvis[oldUser_index], self.anchor_livebasefea_rec_byvis[oldUser_index], self.realtime_ids_rec_byvis[oldUser_index], self.hourId_rec_byvis[oldUser_index],
-             self.anchor_tagids_rec_byvis[oldUser_index], self.Day_rec_byvis[oldUser_index], self.live_position_rec_byvis[oldUser_index]], axis=1)
+            [self.user_profile_0_rec_bysem[oldUser_index], self.user_profile_1_rec_bysem[oldUser_index], self.user_profile_2_rec_bysem[oldUser_index], self.anchor_profile_0_rec_bysem[oldUser_index],
+             self.anchor_profile_1_rec_bysem[oldUser_index], self.anchor_profile_2_rec_bysem[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index],  self.userSongTag_rec_bysem[oldUser_index],
+             self.anchor_live_profile_0_rec_bysem[oldUser_index], self.realtime_ids_rec_bysem[oldUser_index], self.hourId_rec_bysem[oldUser_index], self.anchor_live_profile_1_rec_bysem[oldUser_index], self.Day_rec_bysem[oldUser_index],
+             self.live_position_rec_bysem[oldUser_index], self.user_profile_0_rec_byvis[oldUser_index], self.user_profile_1_rec_byvis[oldUser_index], self.user_profile_2_rec_byvis[oldUser_index],
+             self.anchor_profile_0_rec_byvis[oldUser_index], self.anchor_profile_1_rec_byvis[oldUser_index], self.anchor_profile_2_rec_byvis[oldUser_index], self.anchor_stat_rec_byvis[oldUser_index],
+             self.userSongTag_rec_byvis[oldUser_index], self.anchor_live_profile_0_rec_byvis[oldUser_index], self.realtime_ids_rec_byvis[oldUser_index], self.hourId_rec_byvis[oldUser_index],
+             self.anchor_live_profile_1_rec_byvis[oldUser_index], self.Day_rec_byvis[oldUser_index], self.live_position_rec_byvis[oldUser_index]], axis=1)
         rec_stack = tf.reshape(rec_stack, [count, -1])
         rec_stack = tf.concat([rec_stack, self.anchor_stat_values_rec_bysem[oldUser_index], self.fea_sim_rec_bysem[oldUser_index],self.realtime_values_rec_bysem[oldUser_index],
                                self.anchor_stat_values_rec_byvis[oldUser_index], self.fea_sim_rec_byvis[oldUser_index], self.realtime_values_rec_byvis[oldUser_index]], axis=-1)
 
         stack = tf.concat(
-            [self.user_profile_basefea_embeddings[oldUser_index], self.user_appcate1_embeddings[oldUser_index], self.user_appcate2_embeddings[oldUser_index], self.anchor_profile_basefea_embeddings[oldUser_index],
-             self.anchor_appcate1_embeddings[oldUser_index], self.anchor_appcate2_embeddings[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index], self.userSongTag_embeddings[oldUser_index],
-             self.anchor_livebasefea_embeddings[oldUser_index], self.realtime_ids_embeddings[oldUser_index], self.hour_embeddings[oldUser_index], self.anchor_tagids_embeddings[oldUser_index], self.Day_embeddings[oldUser_index],
-             self.livePosition_embeddings[oldUser_index], self.user_profile_basefea_embeddings[oldUser_index], self.user_appcate1_embeddings[oldUser_index], self.user_appcate2_embeddings[oldUser_index], self.anchor_profile_basefea_embeddings[oldUser_index],
-             self.anchor_appcate1_embeddings[oldUser_index], self.anchor_appcate2_embeddings[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index], self.userSongTag_embeddings[oldUser_index],
-             self.anchor_livebasefea_embeddings[oldUser_index], self.realtime_ids_embeddings[oldUser_index], self.hour_embeddings[oldUser_index], self.anchor_tagids_embeddings[oldUser_index], self.Day_embeddings[oldUser_index],
+            [self.user_profile_0_embeddings[oldUser_index], self.user_profile_1_embeddings[oldUser_index], self.user_profile_2_embeddings[oldUser_index], self.anchor_profile_0_embeddings[oldUser_index],
+             self.anchor_profile_1_embeddings[oldUser_index], self.anchor_profile_2_embeddings[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index], self.userSongTag_embeddings[oldUser_index],
+             self.anchor_live_profile_0_embeddings[oldUser_index], self.realtime_ids_embeddings[oldUser_index], self.hour_embeddings[oldUser_index], self.anchor_live_profile_1_embeddings[oldUser_index], self.Day_embeddings[oldUser_index],
+             self.livePosition_embeddings[oldUser_index], self.user_profile_0_embeddings[oldUser_index], self.user_profile_1_embeddings[oldUser_index], self.user_profile_2_embeddings[oldUser_index], self.anchor_profile_0_embeddings[oldUser_index],
+             self.anchor_profile_1_embeddings[oldUser_index], self.anchor_profile_2_embeddings[oldUser_index], self.anchor_stat_rec_bysem[oldUser_index], self.userSongTag_embeddings[oldUser_index],
+             self.anchor_live_profile_0_embeddings[oldUser_index], self.realtime_ids_embeddings[oldUser_index], self.hour_embeddings[oldUser_index], self.anchor_live_profile_1_embeddings[oldUser_index], self.Day_embeddings[oldUser_index],
              self.livePosition_embeddings[oldUser_index]], axis=1)
         stack = tf.reshape(stack, [count, -1])
         stack = tf.concat([stack, self.anchor_stat_values[oldUser_index], self.fea_sim[oldUser_index], self.realtime_values[oldUser_index],
@@ -231,7 +231,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         oldUser_index = tf.reshape(tf.equal(self.newUser_index, False),[row])
         count = tf.reduce_sum(tf.cast(oldUser_index,tf.int32),axis=0)
         rec_stack = tf.concat(
-            [self.userRecanchor_embeddings_rec_bysem[oldUser_index], self.user_stat_embedding_rec_bysem[oldUser_index], self.user_topHour_embedding_rec_bysem[oldUser_index], self.Wanchorids_long_embeddings_rec_bysem[oldUser_index],
+            [self.userRecanchor_embeddings_rec_bysem[oldUser_index], self.user_stat_embedding_rec_bysem[oldUser_index], self.user_profile_3_rec_bysem[oldUser_index], self.Wanchorids_long_embeddings_rec_bysem[oldUser_index],
              self.Wanchorids_short_embeddings_rec_bysem[oldUser_index], self.Wanchorids_noclick_embeddings_rec_bysem[oldUser_index], self.Wanchorids_effect_embeddings_rec_bysem[oldUser_index],
              self.userRecanchor_embeddings_rec_byvis[oldUser_index], self.user_stat_embedding_rec_byvis[oldUser_index], self.user_topHour_embedding_rec_byvis[oldUser_index], self.Wanchorids_long_embeddings_rec_byvis[oldUser_index],
              self.Wanchorids_short_embeddings_rec_byvis[oldUser_index], self.Wanchorids_noclick_embeddings_rec_byvis[oldUser_index], self.Wanchorids_effect_embeddings_rec_byvis[oldUser_index]], axis=1)
@@ -241,9 +241,9 @@ class DSTNEmbeddingLayerSnpShot(object):
                                self.Wanchorids_long_len_rec_byvis[oldUser_index], self.Wanchorids_short_len_rec_byvis[oldUser_index], self.Wanchorids_noclick_len_rec_byvis[oldUser_index], self.Wanchorids_effect_len_rec_byvis[oldUser_index]], axis=-1)
 
         stack = tf.concat(
-            [self.userRecanchor_embeddings_pre[oldUser_index], self.user_stat_embedding_pre[oldUser_index], self.user_topHour_embedding_pre[oldUser_index], self.Wanchorids_long_embeddings_pre[oldUser_index],
+            [self.userRecanchor_embeddings_pre[oldUser_index], self.user_stat_embedding_pre[oldUser_index], self.user_profile_3_embedding_pre[oldUser_index], self.Wanchorids_long_embeddings_pre[oldUser_index],
              self.Wanchorids_short_embeddings_pre[oldUser_index],self.Wanchorids_noclick_embeddings_pre[oldUser_index], self.Wanchorids_effect_embeddings_pre[oldUser_index],
-             self.userRecanchor_embeddings_pre[oldUser_index], self.user_stat_embedding_pre[oldUser_index], self.user_topHour_embedding_pre[oldUser_index], self.Wanchorids_long_embeddings_pre[oldUser_index],
+             self.userRecanchor_embeddings_pre[oldUser_index], self.user_stat_embedding_pre[oldUser_index], self.user_profile_3_embedding_pre[oldUser_index], self.Wanchorids_long_embeddings_pre[oldUser_index],
              self.Wanchorids_short_embeddings_pre[oldUser_index], self.Wanchorids_noclick_embeddings_pre[oldUser_index], self.Wanchorids_effect_embeddings_pre[oldUser_index]], axis=1)
         stack = tf.reshape(stack, [count, -1])
         Wanchorids_long_len_float = tf.reshape(tf.cast(self.Wanchorids_long_len_pre, tf.float32), [row,1])
@@ -262,7 +262,7 @@ class DSTNEmbeddingLayerSnpShot(object):
 
         userRecanchor_embeddings_rec_bysem = tf.where(self.newUser_index, self.userRecanchor_embeddings_rec_bysem, self.userRecanchor_embeddings_pre)
         user_stat_embedding_rec_bysem = tf.where(self.newUser_index, self.user_stat_embedding_rec_bysem, self.user_stat_embedding_pre)
-        user_topHour_embedding_rec_bysem = tf.where(self.newUser_index, self.user_topHour_embedding_rec_bysem, self.user_topHour_embedding_pre)
+        user_profile_3_embedding_rec_bysem = tf.where(self.newUser_index, self.user_profile_3_embedding_rec_bysem, self.user_profile_3_embedding_pre)
         Wanchorids_long_embeddings_rec_bysem = tf.where(self.newUser_index, self.Wanchorids_long_embeddings_rec_bysem, self.Wanchorids_long_embeddings_pre)
         Wanchorids_short_embeddings_rec_bysem = tf.where(self.newUser_index, self.Wanchorids_short_embeddings_rec_bysem, self.Wanchorids_short_embeddings_pre)
         Wanchorids_effect_embeddings_rec_bysem = tf.where(self.newUser_index, self.Wanchorids_effect_embeddings_rec_bysem, self.Wanchorids_effect_embeddings_pre)
@@ -295,7 +295,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         # 训练时不填充
         self.userRecanchor_embeddings = tf.cond(self.train_phase, lambda: self.userRecanchor_embeddings_pre, lambda: self.userRecanchor_embeddings_pre ) #这里不需要填充
         self.user_stat_embedding = tf.cond(self.train_phase, lambda: self.user_stat_embedding_pre, lambda: self.user_stat_embedding_pre )  #这里不需要填充
-        self.user_topHour_embedding = tf.cond(self.train_phase, lambda: self.user_topHour_embedding_pre, lambda: user_topHour_embedding_rec_bysem )
+        self.user_profile_3_embedding = tf.cond(self.train_phase, lambda: self.user_profile_3_embedding_pre, lambda: user_profile_3_embedding_rec_bysem )
         self.Wanchorids_long_embeddings = tf.cond(self.train_phase, lambda: self.Wanchorids_long_embeddings_pre, lambda: Wanchorids_long_embeddings_rec_bysem )
         self.Wanchorids_long_len = tf.cond(self.train_phase, lambda: self.Wanchorids_long_len_pre, lambda: Wanchorids_long_len_rec_bysem )
         self.Wanchorids_short_embeddings = tf.cond(self.train_phase, lambda: self.Wanchorids_short_embeddings_pre, lambda: Wanchorids_short_embeddings_rec_bysem )
@@ -326,17 +326,17 @@ class DSTNEmbeddingLayerSnpShot(object):
         with tf.name_scope("user_base_fea_embedding"):
             self.baseFea_W = tf.Variable(tf.random_normal([self.base_fea_size, self.embedding_size], 0, 0.01),
                                          name="baseFea_W")
-            self.user_profile_basefea_embeddings = tf.nn.embedding_lookup(self.baseFea_W, self.user_profile_basefea,
-                                                                          name="user_profile_basefea_embeddings")
-            self.user_appcate1_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.user_appcate1, None,
+            self.user_profile_0_embeddings = tf.nn.embedding_lookup(self.baseFea_W, self.user_profile_0,
+                                                                          name="user_profile_0_embeddings")
+            self.user_profile_1_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.user_profile_1, None,
                                                                           combiner="sum",
-                                                                          name="user_appcate1_embeddings")
-            self.user_appcate1_embeddings = tf.reshape(self.user_appcate1_embeddings,
+                                                                          name="user_profile_1_embeddings")
+            self.user_profile_1_embeddings = tf.reshape(self.user_profile_1_embeddings,
                                                        shape=[-1, 1, self.embedding_size])
-            self.user_appcate2_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.user_appcate2, None,
+            self.user_profile_2_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.user_profile_2, None,
                                                                           combiner="sum",
-                                                                          name="user_appcate2_embeddings")
-            self.user_appcate2_embeddings = tf.reshape(self.user_appcate2_embeddings,
+                                                                          name="user_profile_2_embeddings")
+            self.user_profile_2_embeddings = tf.reshape(self.user_profile_2_embeddings,
                                                        shape=[-1, 1, self.embedding_size])
 
 
@@ -349,10 +349,10 @@ class DSTNEmbeddingLayerSnpShot(object):
                                           name="userStat_W")
             self.user_stat_embedding_pre = tf.nn.embedding_lookup(self.userStat_W, self.user_statIds,
                                                               name="user_statid_embedding")
-            self.userTophour_W = tf.Variable(tf.random_normal([self.Tophour_fea_size, self.embedding_size], 0, 0.01),
-                                             name="userTophour_W")
-            self.user_topHour_embedding_pre = tf.nn.embedding_lookup(self.userTophour_W, self.user_topHourIds,
-                                                                 name="user_topHourIds_embedding")
+            self.user_profile_3_fea_W = tf.Variable(tf.random_normal([self.user_profile_3_fea_size, self.embedding_size], 0, 0.01),
+                                             name="user_profile_3_W")
+            self.user_profile_3_embedding_pre = tf.nn.embedding_lookup(self.user_profile_3_fea_W, self.user_profile_3,
+                                                                 name="user_profile_3_embedding")
             Wanchorids_long_embeddings = tf.nn.embedding_lookup(self.anchorId_W, self.Wanchorids_long_dense)
             Wanchorids_long_embeddings = tf.reshape(Wanchorids_long_embeddings,
                                                     shape=[-1, tf.shape(self.Wanchorids_long_dense)[1],
@@ -392,21 +392,21 @@ class DSTNEmbeddingLayerSnpShot(object):
                                                                            axis=1),
                                                          lambda: tf.identity(Wanchorids_noclick_embeddings))
 
-
         with tf.name_scope("anchor_base_fea_embedding"):
-            self.anchor_profile_basefea_embeddings = tf.nn.embedding_lookup(self.baseFea_W, self.anchor_profile_basefea,
-                                                                            name="anchor_profile_basefea_embeddings")
-            self.anchor_appcate1_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.anchor_appcate1, None,
+            self.anchor_profile_0_embeddings = tf.nn.embedding_lookup(self.baseFea_W, self.anchor_profile_0,
+                                                                            name="anchor_profile_0_embeddings")
+            self.anchor_profile_1_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.anchor_profile_1, None,
                                                                             combiner="sum",
-                                                                            name="anchor_appcate1_embeddings")
-            self.anchor_appcate1_embeddings = tf.reshape(self.anchor_appcate1_embeddings,
+                                                                            name="anchor_profile_1_embeddings")
+            self.anchor_profile_1_embeddings = tf.reshape(self.anchor_profile_1_embeddings,
                                                          shape=[-1, 1, self.embedding_size])
-            self.anchor_appcate2_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.anchor_appcate2, None,
+            self.anchor_profile_2_embeddings = tf.nn.embedding_lookup_sparse(self.baseFea_W, self.anchor_profile_2, None,
                                                                             combiner="sum",
-                                                                            name="anchor_appcate2_embeddings")
-            self.anchor_appcate2_embeddings = tf.reshape(self.anchor_appcate2_embeddings,
+                                                                            name="anchor_profile_2_embeddings")
+            self.anchor_profile_2_embeddings = tf.reshape(self.anchor_profile_2_embeddings,
                                                          shape=[-1, 1, self.embedding_size])
             self.anchorid_embeddings = tf.nn.embedding_lookup(self.anchorId_W, self.anchorId)
+
 
         with tf.name_scope("anchor_action_fea_embedding"):
             self.anchorStat_W = tf.Variable(tf.random_normal([self.statsFea_size, self.embedding_size], 0, 0.01),
@@ -450,16 +450,16 @@ class DSTNEmbeddingLayerSnpShot(object):
         with tf.name_scope("online_fea_embedding"):
             self.anchorLiveFea_W = tf.Variable(
                 tf.random_normal([self.anchor_livefea_size, self.embedding_size], 0, 0.01), name="anchorLiveFea_W")
-            self.anchor_livebasefea_embeddings = tf.nn.embedding_lookup(self.anchorLiveFea_W, self.anchor_live_basefea)
+            self.anchor_live_profile_0_embeddings = tf.nn.embedding_lookup(self.anchorLiveFea_W, self.anchor_live_profile_0)
             self.realtimeFea_W = tf.Variable(tf.random_normal([self.realtimeFea_size, self.embedding_size], 0, 0.01),
                                              name="realtimeFea_W")
             self.realtime_ids_embeddings = tf.nn.embedding_lookup(self.realtimeFea_W, self.realtime_ids)
             self.impressHour_W = tf.Variable(tf.random_normal([self.hour_size, self.embedding_size], 0, 0.01),
                                              name="impressHour_W")
             self.hour_embeddings = tf.nn.embedding_lookup(self.impressHour_W, self.hourId)
-            anchor_tagids_embeddings = tf.nn.embedding_lookup_sparse(self.anchorLiveFea_W, self.anchor_tagids, None,
+            anchor_live_profile_1_embeddings = tf.nn.embedding_lookup_sparse(self.anchorLiveFea_W, self.anchor_live_profile_1, None,
                                                                      combiner="sum", name="anchor_tagids_embeddings")
-            self.anchor_tagids_embeddings = tf.reshape(anchor_tagids_embeddings, shape=[-1, 1, self.embedding_size])
+            self.anchor_live_profile_1_embeddings = tf.reshape(anchor_live_profile_1_embeddings, shape=[-1, 1, self.embedding_size])
             self.impressDay_W = tf.Variable(tf.random_normal([8, self.embedding_size], 0, 0.01), name="impressDay_W")
             self.Day_embeddings = tf.nn.embedding_lookup(self.impressDay_W, self.dayOfWeek)
             self.LivePosition_W = tf.Variable(tf.random_normal([self.LivePosition_size, self.embedding_size], 0, 0.01),
@@ -572,22 +572,22 @@ class DSTNEmbeddingLayerSnpShot(object):
 
 
     def make_FM_Input(self):
-        user_all_profile = tf.concat([self.user_profile_basefea_embeddings, self.user_appcate1_embeddings, self.user_appcate2_embeddings, self.userSongTag_embeddings],axis=1)
-        anchor_all_profile = tf.concat([self.anchor_profile_basefea_embeddings, self.anchor_appcate1_embeddings,self.anchor_appcate2_embeddings, self.anchorSongTag_embeddings], axis=1)
-        anchor_liveFea = tf.concat([self.anchor_livebasefea_embeddings, self.anchor_tagids_embeddings], axis=1)
+        user_all_profile = tf.concat([self.user_profile_0_embeddings, self.user_profile_1_embeddings, self.user_profile_2_embeddings, self.userSongTag_embeddings],axis=1)
+        anchor_all_profile = tf.concat([self.anchor_profile_0_embeddings, self.anchor_profile_1_embeddings,self.anchor_profile_2_embeddings, self.anchorSongTag_embeddings], axis=1)
+        anchor_liveFea = tf.concat([self.anchor_live_profile_0_embeddings, self.anchor_live_profile_1_embeddings], axis=1)
         FM_Input = tf.concat([user_all_profile, anchor_all_profile, anchor_liveFea, self.user_stat_embedding,
-                              self.user_topHour_embedding, self.anchor_stat_dense, self.day_ctr_dense1,
+                              self.user_profile_3_embedding_pre, self.anchor_stat_dense, self.day_ctr_dense1,
                               self.day_cvr_dense1,
                               self.userRecanchor_embeddings, self.anchorid_embeddings, self.realtime_value_dense,
                               self.hour_embeddings, self.Day_embeddings, self.livePosition_embeddings], axis=1)
 
-        FM_size = (self.profile_size + self.profile_size - 1) + 3 * 2 + self.live_size + 1 + self.user_statIds_size + self.user_topHourIds_size + self.anchor_stats_size \
+        FM_size = (self.profile_0_size + self.profile_0_size - 1) + 3 * 2 + self.live_size + 1 + self.user_statIds_size + self.user_topHourIds_size + self.anchor_stats_size \
                   + 4 + self.realtime_values_size + 1 + 2 * self.day_ctr_size
         return FM_Input, FM_size
 
     def make_DNN_Input(self, FM_Input, FM_size):
         dnn_input_temp = tf.reshape(FM_Input, shape=[-1, FM_size * self.embedding_size])
-        DNN_Input = tf.concat([dnn_input_temp, self.fea_sim, self.anchor_tagidonehot_float, self.redict_weights],
+        DNN_Input = tf.concat([dnn_input_temp, self.fea_sim, self.anchor_live_profile_2_float, self.redict_weights],
                               axis=1)
         DNN_size = FM_size * self.embedding_size + 2 + 38 + 8
         return DNN_Input, DNN_size
@@ -609,7 +609,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         self.user_stat_fea_size = config["user_stat_fea_size"]
         self.realtimeFea_size = config["realtimeFea_size"]
         self.statsFea_size = config["statsFea_size"]
-        self.Tophour_fea_size = config["Tophour_fea_size"]
+        self.user_profile_3_fea_size = config["user_profile_3_fea_size"]
         self.anchor_livefea_size = config["anchor_livefea_size"]
         self.anchorId_size = config["anchorId_size"]
         self.hour_size = config["hour_size"]
@@ -617,14 +617,14 @@ class DSTNEmbeddingLayerSnpShot(object):
         self.songtag_size = config["songtag_size"]
         self.LivePosition_size = config["LivePosition_size"]
         ##  样本特征长度
-        self.profile_size = config["profile_size"]
+        self.profile_0_size = config["profile_0_size"]
         self.user_statIds_size = config["user_statIds_size"]
         self.realtime_values_size = config["realtime_values_size"]
         self.anchor_stats_size = config["anchor_stats_size"]
         self.live_size = config["live_size"]
         self.day_ctr_size = config["day_ctr_size"]
         self.day_cvr_size = config["day_cvr_size"]
-        self.user_topHourIds_size = config["user_topHourIds_size"]
+        self.user_profile_3_size = config["user_profile_3_size"]
         self.tagidOnehot_size = config["tagidOnehot_size"]
 
         self.fea_sim_size = config["fea_sim_size"]
@@ -648,37 +648,37 @@ class DSTNEmbeddingLayerSnpShot(object):
         self.label_ctcvr = tf.cast(self.label_ctcvr, dtype=tf.float32)
 
         # ===========用户基础特征===========
-        self.user_profile_basefea = tf.placeholder(tf.int64, [None, self.profile_size], name="user_profile_basefea")
-        self.user_appcate1 = tf.sparse_placeholder(tf.int64, name="user_appcate1")
-        self.user_appcate2 = tf.sparse_placeholder(tf.int64, name="user_appcate2")
+        self.user_profile_0 = tf.placeholder(tf.int64, [None, self.profile_0_size], name="user_profile_0")
+        self.user_profile_1 = tf.sparse_placeholder(tf.int64, name="user_profile_1")
+        self.user_profile_2 = tf.sparse_placeholder(tf.int64, name="user_profile_2")
 
-        # ===========用户行为特征===========
+       
         self.user_RecAnchor = tf.sparse_placeholder(tf.int64, name="user_RecAnchor")
         self.user_statIds = tf.placeholder(tf.int64, [None, self.user_statIds_size], name="user_statIds")
-        self.user_topHourIds = tf.placeholder(tf.int64, [None, self.user_topHourIds_size], name="user_topHourIds")
-        ## 长期 90天
+        self.user_profile_3 = tf.placeholder(tf.int64, [None, self.user_profile_3_size], name="user_profile_3")
+       
         self.Wanchorids_long = tf.sparse_placeholder(tf.int64, name="Wanchorids_long")
         self.Wanchorids_long_dense = tf.sparse_tensor_to_dense(self.Wanchorids_long)
         self.Wanchorids_long_len_pre = tf.placeholder(tf.int64, [None], name="Wanchorids_long_len")      ####
-        ## 短期序列
+        
         self.Wanchorids_short = tf.sparse_placeholder(tf.int64, name="Wanchorids_short")
         self.Wanchorids_short_dense = tf.sparse_tensor_to_dense(self.Wanchorids_short)
         self.Wanchorids_short_len_pre = tf.placeholder(tf.int64, [None], name="Wanchorids_short_len")     ####
-        ## 纯有效观看序列
+        
         self.Wanchorids_effect = tf.sparse_placeholder(tf.int64, name="Wanchorids_effect")
         self.Wanchorids_effect_dense = tf.sparse_tensor_to_dense(self.Wanchorids_effect)
         self.Wanchorids_effect_len_pre = tf.placeholder(tf.int64, [None], name="Wanchorids_effect_len")    ####
-        ## 曝光未点击序列
+        
         self.Wanchorids_noclick = tf.sparse_placeholder(tf.int64, name="Wanchorids_noclick")
         self.Wanchorids_noclick_dense = tf.sparse_tensor_to_dense(self.Wanchorids_noclick)
         self.Wanchorids_noclick_len_pre = tf.placeholder(tf.int64, [None], name="Wanchorids_noclick_len")   ####
         self.redict_weights_pre = tf.placeholder(tf.float32, [None, 8], name="redict_weights_pre")  # 用户对目标主播重定向特征  ####
 
         # ===========主播基础特征===========
-        self.anchor_profile_basefea = tf.placeholder(tf.int64, [None, self.profile_size - 1],
-                                                     name="anchor_profile_basefea")
-        self.anchor_appcate1 = tf.sparse_placeholder(tf.int64, name="anchor_appcate1")
-        self.anchor_appcate2 = tf.sparse_placeholder(tf.int64, name="anchor_appcate2")
+        self.anchor_profile_0 = tf.placeholder(tf.int64, [None, self.profile_0_size - 1],
+                                                     name="anchor_profile_0")
+        self.anchor_profile_1 = tf.sparse_placeholder(tf.int64, name="anchor_profile_1")
+        self.anchor_profile_2 = tf.sparse_placeholder(tf.int64, name="anchor_profile_2")
         self.anchorId = tf.placeholder(tf.int64, [None, 1], name="anchorId")
 
         # ===========主播行为特征===========
@@ -694,7 +694,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         self.day_cvrid_seq_re = tf.sparse_tensor_to_dense(self.day_cvrid_seq)
         self.ctcvr_seq_len = tf.placeholder(tf.int64, [None], name="ctcvr_seq_len")
 
-        # ===========云音乐特征============
+        
         self.user_songTagids = tf.sparse_placeholder(tf.int64, name="user_songTagids")
         self.user_tagWeights = tf.sparse_placeholder(tf.float32, name="user_tagWeights")
         self.anchor_songTagids = tf.sparse_placeholder(tf.int64, name="anchor_songTagids")
@@ -702,15 +702,15 @@ class DSTNEmbeddingLayerSnpShot(object):
 
         # =============在线上下文特征===========
         self.fea_sim = tf.placeholder(tf.float32, [None, 2], name="fea_sim")
-        self.anchor_live_basefea = tf.placeholder(tf.int64, [None, self.live_size], name="anchor_live_basefea")
+        self.anchor_live_profile_0 = tf.placeholder(tf.int64, [None, self.live_size], name="anchor_live_profile_0")
         self.realtime_ids = tf.placeholder(tf.int64, [None, self.realtime_values_size], name="realtime_ids")
         self.realtime_values = tf.placeholder(tf.float32, [None, self.realtime_values_size], name="realtime_values")
         self.hourId = tf.placeholder(tf.int64, [None, 1], name="hourId")  ## 曝光时间
-        self.anchor_tagids = tf.sparse_placeholder(tf.int64, name="anchor_tagids")
+        self.anchor_live_profile_1 = tf.sparse_placeholder(tf.int64, name="anchor_live_profile_1")
         self.dayOfWeek = tf.placeholder(tf.int64, [None, 1], name="dayOfWeek")  ## 曝光对应的日期
         self.live_position = tf.placeholder(tf.int64, [None, 1], name="live_position")  ## 首页直播对应的位置
-        self.anchor_tagidonehot = tf.placeholder(tf.int64, [None, 38], name="anchor_tagidonehot")
-        self.anchor_tagidonehot_float = tf.cast(self.anchor_tagidonehot, dtype=tf.float32)
+        self.anchor_live_profile_2 = tf.placeholder(tf.int64, [None, 38], name="anchor_live_profile_2")
+        self.anchor_live_profile_2_float = tf.cast(self.anchor_live_profile_2, dtype=tf.float32)
 
         # =============其余参数===========
         self.keep_prob = tf.placeholder(tf.float32, name="keep_prob")
@@ -727,7 +727,7 @@ class DSTNEmbeddingLayerSnpShot(object):
         zeros = tf.zeros([row])
         logic2_ = tf.where(tf.equal(self.redict_weights_pre, tf.zeros_like(self.redict_weights_pre)), tf.zeros_like(self.redict_weights_pre), tf.ones_like(self.redict_weights_pre))
         self.logic2_  = tf.where(tf.greater(tf.reduce_sum(logic2_, axis=1), tf.cast(zeros, tf.float32)), zeros, ones)
-        logic3_ =  tf.where(tf.equal(self.user_topHourIds, tf.tile(tf.reshape(tf.cast(tf.constant([0,12,24,36,48,60]), tf.int64),[1,6]),[row,1])), tf.zeros_like(self.user_topHourIds), tf.ones_like(self.user_topHourIds))
+        logic3_ =  tf.where(tf.equal(self.user_profile_3, tf.tile(tf.reshape(tf.cast(tf.constant([0,12,24,36,48,60]), tf.int64),[1,6]),[row,1])), tf.zeros_like(self.user_profile_3), tf.ones_like(self.user_profile_3))
         self.logic3_  = tf.where(tf.greater(tf.reduce_sum(logic3_, axis=1), tf.cast(zeros, tf.int64)), zeros, ones)
         logic4_ = tf.where(tf.equal(self.Wanchorids_long_dense, tf.zeros_like(self.Wanchorids_long_dense)), tf.zeros_like(self.Wanchorids_long_dense), tf.ones_like(self.Wanchorids_long_dense))
         self.logic4_  = tf.where(tf.greater(tf.reduce_sum(logic4_, axis=1), tf.cast(zeros, tf.int64)), zeros, ones)

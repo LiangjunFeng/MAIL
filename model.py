@@ -68,7 +68,7 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
             #out_cin=_build_extreme_FM(FM_Input, FM_size,self.embedding_size, self.cross_layer_sizes)
             # self-attention
             x_concat_attention = attention(FM_Input, 128, return_alphas=False)
-            ## 用户序列 长序列
+            
             # Item-to-Item Network
             with tf.name_scope('i2i_net_long'):
                 att_outputs_long, alphas_long, scores_unnorm_long=DMR_DinAttention(self.anchor_fea, self.anchor_his_fea_long_v2, self.Wanchorids_long_len, self.position_his_eb_long, scope_bn='Dmri2i_long' )
@@ -93,7 +93,7 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
                     rel_u2i_long = tf.reduce_sum(dm_user_vector_long * self.anchor_fea, axis=-1, keep_dims=True)  # B,1
 
                 self.rel_u2i_long = rel_u2i_long
-            ## 短序列
+        
             with tf.name_scope('i2i_net_short'):
                 att_outputs_short, alphas_short, scores_unnorm_short = DMR_DinAttention(self.anchor_fea,self.anchor_his_fea_short_v2,self.Wanchorids_short_len, self.position_his_eb_short, scope_bn='Dmri2i_short')
                 rel_i2i_short = tf.expand_dims(tf.reduce_sum(scores_unnorm_short, [1, 2]), -1)
@@ -117,7 +117,7 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
                     rel_u2i_short = tf.reduce_sum(dm_user_vector_short * self.anchor_fea, axis=-1, keep_dims=True)  # B,1
 
                 self.rel_u2i_short = rel_u2i_short
-            ## 用户序列 纯有效观看序列
+            
             # Item-to-Item Network
             with tf.name_scope('i2i_net_effect'):
                 att_outputs_effect, alphas_effect, scores_unnorm_effect = DMR_DinAttention(self.anchor_fea,  self.anchor_his_fea_effect_v2,  self.Wanchorids_effect_len,   self.position_his_eb_effect,   scope_bn='Dmri2i_effect')
@@ -142,7 +142,7 @@ class Model_DSTN_SNPSHOT(DSTNEmbeddingLayerSnpShot):
                     rel_u2i_effect = tf.reduce_sum(dm_user_vector_effect * self.anchor_fea, axis=-1, keep_dims=True)  # B,1
 
                 self.rel_u2i_effect = rel_u2i_effect
-            # ## 纯曝光
+            
             with tf.name_scope('i2i_net_noclick'):
                 att_outputs_noclick, alphas_noclick, scores_unnorm_noclick = DMR_DinAttention(self.anchor_fea,  self.anchor_his_fea_noclick_v2,  self.Wanchorids_noclick_len,   self.position_his_eb_noclick,   scope_bn='Dmri2i_noclick')
                 rel_i2i_noclick = tf.expand_dims(tf.reduce_sum(scores_unnorm_noclick, [1, 2]), -1)

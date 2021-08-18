@@ -34,22 +34,22 @@ def train(model, config, train_file, test_file, test_file2, train_date):
         next_element_train = iterator_train.get_next()
 
         while True:
-            label_ctr, label_cvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
+            label_ctr, label_ctcvr, user_profile_0, user_profile_1, user_profile_2, user_RecAnchor, user_statIds, user_profile_3, \
             Wanchorids_long, Wanchorids_long_len, Wanchorids_short, Wanchorids_short_len, Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
-            anchor_profile_basefea, anchor_appcate1, anchor_appcate2, anchor_live_basefea, anchor_tagids, anchor_stats, anchor_stat_values, \
+            anchor_profile_0, anchor_profile_1, anchor_profile_2, anchor_live_profile_0, anchor_live_profile_1, anchor_stats, anchor_stat_values, \
             user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
             day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids, \
-            hourId, dayOfWeek, redict_weights, live_position, anchor_tagidonehot, user_id = sess.run(next_element_train)
+            hourId, dayOfWeek, redict_weights, live_position, anchor_live_profile_2, user_id = sess.run(next_element_train)
 
 
             if (label_ctr.shape[0] < batch_size):
                 break
-            return_dict = run_train_step(model, sess, (label_ctr, label_cvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
-            Wanchorids_long, Wanchorids_long_len, Wanchorids_short, Wanchorids_short_len, Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
-            anchor_profile_basefea, anchor_appcate1, anchor_appcate2, anchor_live_basefea, anchor_tagids, anchor_stats, anchor_stat_values, \
-            user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
-            day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids, \
-            hourId, dayOfWeek, redict_weights, live_position, anchor_tagidonehot,user_id))
+            return_dict = run_train_step(model, sess, (label_ctr, label_ctcvr, user_profile_0, user_profile_1, user_profile_2, user_RecAnchor, user_statIds, user_profile_3, \
+           Wanchorids_long ,Wanchorids_long_len, Wanchorids_short ,Wanchorids_short_len,Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
+           anchor_profile_0, anchor_profile_1, anchor_profile_2, anchor_live_profile_0, anchor_live_profile_1, anchor_stats, anchor_stat_values, \
+           user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
+           day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids,\
+           hourId, dayOfWeek,  redict_weights, live_position, anchor_live_profile_2, user_id))
 
             total_batch += 1
 
@@ -73,20 +73,20 @@ if __name__ == '__main__':
         "user_stat_fea_size": 120,
         "realtimeFea_size": 2760,
         "statsFea_size": 210,
-        "Tophour_fea_size": 80,
+        "user_profile_3_fea_size": 80,
         "hour_size": 12,
         "day_fea_size": 30,
         "songtag_size": 90,
         "LivePosition_size":15,
 
-        "profile_size": 8,
+        "profile_0_size": 8,
         "user_statIds_size": 12,
         "realtime_values_size": 22,
         "anchor_stats_size": 15,
         "live_size": 4,
         "day_ctr_size": 7,
         "day_cvr_size": 7,
-        "user_topHourIds_size": 6,
+        "user_profile_3_size": 6,
         "tagidOnehot_size":38,
 
         "fea_sim_size": 2,

@@ -24,34 +24,33 @@ def get_time_dif(start_time):
 
 
 def parse_exmp(serial_exmp):
-    feats = tf.parse_single_example(serial_exmp, features={'user_profile_basefea': tf.FixedLenFeature([8], tf.int64),
-                                                           'user_appcate1': tf.VarLenFeature(tf.int64),
-                                                           'user_appcate2': tf.VarLenFeature(tf.int64),
+    feats = tf.parse_single_example(serial_exmp, features={'user_profile_0': tf.FixedLenFeature([8], tf.int64),
+                                                           'user_profile_1': tf.VarLenFeature(tf.int64),
+                                                           'user_profile_2': tf.VarLenFeature(tf.int64),
                                                            "user_RecAnchor": tf.VarLenFeature(tf.int64),
                                                            "user_statIds": tf.FixedLenFeature([12], tf.int64),
-                                                           "user_topHourIds": tf.FixedLenFeature([6], tf.int64),
+                                                           "user_profile_3": tf.FixedLenFeature([6], tf.int64),
                                                            "redict_weights": tf.FixedLenFeature([8], tf.float32),
                                                            "user_songTagids": tf.VarLenFeature(tf.int64),
                                                            "user_tagWeights": tf.VarLenFeature(tf.float32),
-                                                           ## 用户长短序列
-                                                           ## 长期90天
+                                                           
                                                            "Wanchorids_long": tf.VarLenFeature(tf.int64) ,
                                                            "Wanchorids_long_len": tf.FixedLenFeature([], tf.int64),
-                                                           ## 短期30天
+                                                           
                                                            "Wanchorids_short": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_short_len": tf.FixedLenFeature([], tf.int64),
-                                                           ## noclik
+                                                           
                                                            "Wanchorids_noclick": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_noclick_len": tf.FixedLenFeature([], tf.int64),
-                                                           ## effect
+                                                           
                                                            "Wanchorids_effect": tf.VarLenFeature(tf.int64),
                                                            "Wanchorids_effect_len": tf.FixedLenFeature([], tf.int64),
 
-                                                           'anchor_profile_basefea': tf.FixedLenFeature([7], tf.int64),
-                                                           'anchor_appcate1': tf.VarLenFeature(tf.int64),
-                                                           'anchor_appcate2': tf.VarLenFeature(tf.int64),
-                                                           'anchor_live_basefea': tf.FixedLenFeature([4], tf.int64),
-                                                           'anchor_tagids': tf.VarLenFeature(tf.int64),
+                                                           'anchor_profile_0': tf.FixedLenFeature([7], tf.int64),
+                                                           'anchor_profile_1': tf.VarLenFeature(tf.int64),
+                                                           'anchor_profile_2': tf.VarLenFeature(tf.int64),
+                                                           'anchor_live_profile_0': tf.FixedLenFeature([4], tf.int64),
+                                                           'anchor_live_profile_1': tf.VarLenFeature(tf.int64),
                                                            'anchor_stats': tf.FixedLenFeature([15], tf.int64),
                                                            'anchor_stat_values': tf.FixedLenFeature([15], tf.float32),
                                                            "anchor_songTagids": tf.VarLenFeature(tf.int64),
@@ -61,7 +60,7 @@ def parse_exmp(serial_exmp):
                                                            "day_ctrid_seq": tf.VarLenFeature( tf.int64),
                                                            "day_cvrid_seq": tf.VarLenFeature( tf.int64),
                                                            "ctcvr_seq_len": tf.FixedLenFeature([], tf.int64),
-                                                           "anchor_tagidonehot": tf.FixedLenFeature([38], tf.int64),
+                                                           "anchor_live_profile_2": tf.FixedLenFeature([38], tf.int64),
 
                                                            'user_id': tf.FixedLenFeature([], tf.int64),
                                                            'item_id': tf.FixedLenFeature([], tf.int64),
@@ -77,38 +76,37 @@ def parse_exmp(serial_exmp):
                                                            "resource_position": tf.FixedLenFeature([1], tf.int64)
                                                            })
 
-    user_profile_basefea = feats['user_profile_basefea']  # 使用VarLenFeature读入的是一个sparse_tensor，用该函数进行转换
-    user_appcate1 = feats["user_appcate1"]
-    user_appcate2 = feats["user_appcate2"]
+    user_profile_0 = feats['user_profile_0']  # 使用VarLenFeature读入的是一个sparse_tensor，用该函数进行转换
+    user_profile_1 = feats["user_profile_1"]
+    user_profile_2 = feats["user_profile_2"]
     user_RecAnchor = feats["user_RecAnchor"]
     user_statIds = feats["user_statIds"]
-    user_topHourIds = feats["user_topHourIds"]
+    user_profile_3 = feats["user_profile_3"]
 
     redict_weights=feats["redict_weights"]
     user_songTagids=feats["user_songTagids"]
     user_tagWeights = feats["user_tagWeights"]
-    ## 用户长短序列
-    ## 长期90天
+    
     Wanchorids_long=feats["Wanchorids_long"]
     Wanchorids_long_len = feats["Wanchorids_long_len"]
-    ## 短期30天
+    
     Wanchorids_short = feats["Wanchorids_short"]
     Wanchorids_short_len = feats["Wanchorids_short_len"]
-    ## noclick
+    
     Wanchorids_noclick = feats["Wanchorids_noclick"]
     Wanchorids_noclick_len = feats["Wanchorids_noclick_len"]
-    ## effect
+    
     Wanchorids_effect = feats["Wanchorids_effect"]
     Wanchorids_effect_len = feats["Wanchorids_effect_len"]
 
-    anchor_profile_basefea = feats['anchor_profile_basefea']
-    anchor_appcate1 = feats["anchor_appcate1"]
-    anchor_appcate2 = feats["anchor_appcate2"]
-    anchor_live_basefea = feats["anchor_live_basefea"]
-    anchor_tagids = feats["anchor_tagids"]
+    anchor_profile_0 = feats['anchor_profile_0']
+    anchor_profile_1 = feats["anchor_profile_1"]
+    anchor_profile_2 = feats["anchor_profile_2"]
+    anchor_live_profile_0 = feats["anchor_live_profile_0"]
+    anchor_live_profile_1 = feats["anchor_live_profile_1"]
     anchor_stats = feats["anchor_stats"]
     anchor_stat_values = feats["anchor_stat_values"]
-    anchor_tagidonehot=feats["anchor_tagidonehot"]
+    anchor_live_profile_2=feats["anchor_live_profile_2"]
 
     day_ctr_seq = feats["day_ctr_seq"]
     day_cvr_seq =  feats["day_cvr_seq"]
@@ -136,12 +134,12 @@ def parse_exmp(serial_exmp):
     label_ctcvr = feats["label_cvr"]
     label_ctr = feats["label_ctr"]
 
-    return label_ctr, label_ctcvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
+    return label_ctr, label_ctcvr, user_profile_0, user_profile_1, user_profile_2, user_RecAnchor, user_statIds, user_profile_3, \
            Wanchorids_long ,Wanchorids_long_len, Wanchorids_short ,Wanchorids_short_len,Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
-           anchor_profile_basefea, anchor_appcate1, anchor_appcate2, anchor_live_basefea, anchor_tagids, anchor_stats, anchor_stat_values, \
+           anchor_profile_0, anchor_profile_1, anchor_profile_2, anchor_live_profile_0, anchor_live_profile_1, anchor_stats, anchor_stat_values, \
            user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
            day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids,\
-           hourId, dayOfWeek,  redict_weights, live_position, anchor_tagidonehot, user_id
+           hourId, dayOfWeek,  redict_weights, live_position, anchor_live_profile_2, user_id
 
 
 def get_dataset(fname):
@@ -225,12 +223,12 @@ def eval_test_data(model, config, sess, file):
     i=0
     try:
         while True:
-            label_ctr, label_ctcvr, user_profile_basefea, user_appcate1, user_appcate2, user_RecAnchor, user_statIds, user_topHourIds, \
+            label_ctr, label_ctcvr, user_profile_0, user_profile_1, user_profile_2, user_RecAnchor, user_statIds, user_profile_3, \
             Wanchorids_long, Wanchorids_long_len, Wanchorids_short, Wanchorids_short_len, Wanchorids_noclick, Wanchorids_noclick_len, Wanchorids_effect, Wanchorids_effect_len, \
-            anchor_profile_basefea, anchor_appcate1, anchor_appcate2, anchor_live_basefea, anchor_tagids, anchor_stats, anchor_stat_values, \
+            anchor_profile_0, anchor_profile_1, anchor_profile_2, anchor_live_profile_0, anchor_live_profile_1, anchor_stats, anchor_stat_values, \
             user_songTagids, user_tagWeights, anchor_songTagids, anchor_tagWeights, \
             day_ctr_seq, day_cvr_seq, day_ctrid_seq, day_cvrid_seq, ctcvr_seq_len, anchorId, fea_sim, realtime_values, realtime_ids, \
-            hourId, dayOfWeek, redict_weights, live_position, anchor_tagidonehot, user_id = sess.run(next_element_test)
+            hourId, dayOfWeek, redict_weights, live_position, anchor_live_profile_2, user_id = sess.run(next_element_test)
 
             if (len(anchor_profile_basefea) < batch_size):
                 break
@@ -239,12 +237,12 @@ def eval_test_data(model, config, sess, file):
             y_label_ctcvr.extend(label_ctcvr)
             user_id_list.extend(user_id)
 
-            feed_dict = {model.user_profile_basefea: user_profile_basefea,
-                         model.user_appcate1: user_appcate1,
-                         model.user_appcate2: user_appcate2,
+            feed_dict = {model.user_profile_0: user_profile_0,
+                         model.user_profile_1: user_profile_1,
+                         model.user_profile_2: user_profile_2,
                          model.user_RecAnchor: user_RecAnchor,
                          model.user_statIds: user_statIds,
-                         model.user_topHourIds: user_topHourIds,
+                         model.user_profile_3: user_profile_3,
                          model.redict_weights_pre: redict_weights,
                          model.user_songTagids: user_songTagids,
                          model.user_tagWeights: user_tagWeights,
@@ -262,11 +260,11 @@ def eval_test_data(model, config, sess, file):
                          model.Wanchorids_effect: Wanchorids_effect,
                          model.Wanchorids_effect_len_pre: Wanchorids_effect_len,
                          ##主播
-                         model.anchor_profile_basefea: anchor_profile_basefea,
-                         model.anchor_appcate1: anchor_appcate1,
-                         model.anchor_appcate2: anchor_appcate2,
-                         model.anchor_live_basefea: anchor_live_basefea,
-                         model.anchor_tagids: anchor_tagids,
+                         model.anchor_profile_0: anchor_profile_0,
+                         model.anchor_profile_1: anchor_profile_1,
+                         model.anchor_profile_2: anchor_profile_2,
+                         model.anchor_live_profile_0: anchor_live_profile_0,
+                         model.anchor_live_profile_1: anchor_live_profile_1,
                          model.anchor_stats: anchor_stats,
                          model.anchor_stat_values: anchor_stat_values,
                          model.day_ctr_seq: day_ctr_seq,
@@ -276,7 +274,7 @@ def eval_test_data(model, config, sess, file):
                          model.anchor_songTagids: anchor_songTagids,
                          model.anchor_tagWeights: anchor_tagWeights,
                          model.ctcvr_seq_len: ctcvr_seq_len,
-                         model.anchor_tagidonehot: anchor_tagidonehot,
+                         model.anchor_live_profile_2: anchor_live_profile_2,
                          ## 实时特征
                          model.realtime_ids: realtime_ids,
                          model.realtime_values: realtime_values,
@@ -357,31 +355,30 @@ def eval_test_data(model, config, sess, file):
 def make_train_feed_dict(model, batch):
     """make train feed dict for training"""
 
-    feed_dict = {model.user_profile_basefea: batch[2],
-                 model.user_appcate1: batch[3],
-                 model.user_appcate2: batch[4],
+    feed_dict = {model.user_profile_0: batch[2],
+                 model.user_profile_1: batch[3],
+                 model.user_profile_2: batch[4],
                  model.user_RecAnchor: batch[5],
                  model.user_statIds: batch[6],
-                 model.user_topHourIds: batch[7],
-                 ## 用户长短序列
-                 ## 长期90天
+                 model.user_profile_3: batch[7],
+                 
                  model.Wanchorids_long: batch[8],
                  model.Wanchorids_long_len_pre: batch[9],
-                 ## 短期30天
+                 
                  model.Wanchorids_short: batch[10],
                  model.Wanchorids_short_len_pre: batch[11],
-                 ## noclick
+                 
                  model.Wanchorids_noclick: batch[12],
                  model.Wanchorids_noclick_len_pre: batch[13],
-                 ## effect
+                
                  model.Wanchorids_effect: batch[14],
                  model.Wanchorids_effect_len_pre: batch[15],
-                 ##主播
-                 model.anchor_profile_basefea: batch[16],
-                 model.anchor_appcate1: batch[17],
-                 model.anchor_appcate2: batch[18],
-                 model.anchor_live_basefea: batch[19],
-                 model.anchor_tagids: batch[20],
+                 
+                 model.anchor_profile_0: batch[16],
+                 model.anchor_profile_1: batch[17],
+                 model.anchor_profile_2: batch[18],
+                 model.anchor_live_profile_0: batch[19],
+                 model.anchor_live_profile_1: batch[20],
                  model.anchor_stats: batch[21],
                  model.anchor_stat_values: batch[22],
                  model.user_songTagids: batch[23],
@@ -403,7 +400,7 @@ def make_train_feed_dict(model, batch):
                  model.dayOfWeek: batch[37],
                  model.redict_weights_pre: batch[38],
                  model.live_position: batch[39],
-                 model.anchor_tagidonehot: batch[40],
+                 model.anchor_live_profile_2: batch[40],
                  ## 实时特征
                  model.label_ctr: batch[0],
                  model.label_ctcvr: batch[1],
@@ -517,79 +514,8 @@ def prelu(_x, scope=''):
 
 
 
-def _bulid_cnn1d(X_input,X_size,filter_sizes, num_filters, embedding_size):
-    #input: N * F * K
-    #output: N * total_num
-    # cnn Embedding:
-    X_input_expanded = tf.expand_dims(X_input, -1)  # expand dims for conv operation
-    pooled_outputs = list()
-    # Create a convolution + max-pool layer for each filter size
-    for filter_size, filter_num in zip(filter_sizes, num_filters):
-        with tf.name_scope("cov2d-maxpool%s" % filter_size):
-            filter_shape = [filter_size,embedding_size, 1, filter_num]
-            W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-            b = tf.Variable(tf.constant(0.1, shape=[filter_num]), name="b")
-            conv = tf.nn.conv2d(
-                X_input_expanded,
-                W,
-                strides=[1, 1, 1, 1],
-                padding="VALID",
-                name="conv")
-            # print(conv.name, ": ", conv.shape) batch * (seq - filter_shape) + 1 * 1(output channel) *
-            # filter_num
-            h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-            pooled = tf.nn.max_pool(
-                h,
-                ksize=[1, X_size - filter_size + 1, 1, 1],
-                strides=[1, 1, 1, 1],
-                padding='VALID',
-                name="pool")  # 全部池化到 1x1
-            # print(conv.name, ": ", conv.shape , "----", pooled.name, " : " ,pooled.shape)
-            pooled_outputs.append(pooled)
-    total_filters_num = sum(num_filters)
-    h_pool = tf.concat(pooled_outputs, 3)
-    h_pool_flat = tf.reshape(h_pool, [-1, total_filters_num])  # batch * total_num
-    return h_pool_flat
 
 
-def _bulid_dnn_resnet_v1(X_input, deep_layers,l2_reg_lambda, batch_norm, train_phase,keep_prob,batch_norm_decay, scope):
-    dnn_out=X_input
-    x_list=[X_input]
-    with tf.variable_scope(scope+"_dnn_rest" ):
-        for i in range(len(deep_layers)):
-            dnn_out = tf.contrib.layers.fully_connected(inputs=dnn_out, num_outputs=deep_layers[i], \
-                                                        weights_regularizer=tf.contrib.layers.l2_regularizer(
-                                                            l2_reg_lambda), scope='mlp%d' % i)
-
-            if batch_norm:
-                dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
-                                           scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
-            dnn_out=tf.concat([dnn_out, x_list[i]],axis=-1)
-            dnn_out = tf.nn.dropout(dnn_out,keep_prob)  # Apply Dropout after all BN layers and set dropout=0.8(drop_ratio=0.2)
-            x_list.append(dnn_out)
-    return dnn_out
-
-def _bulid_dnn_resnet_v2(X_input, deep_layers,l2_reg_lambda, batch_norm, train_phase,keep_prob,batch_norm_decay, scope):
-    dnn_out=X_input
-    x_list=[X_input]
-    with tf.variable_scope(scope+"_dnn_rest" ):
-        for i in range(len(deep_layers)):
-            dnn_out = tf.contrib.layers.fully_connected(inputs=dnn_out, num_outputs=deep_layers[i], \
-                                                        weights_regularizer=tf.contrib.layers.l2_regularizer(
-                                                            l2_reg_lambda), scope='mlp%d' % i)
-
-            if batch_norm:
-                dnn_out = batch_norm_layer(dnn_out, train_phase=train_phase,
-                                           scope_bn='bn_%d' % i,
-                                           batch_norm_decay=batch_norm_decay)  # 放在RELU之后 https://github.com/ducha-aiki/caffenet-benchmark/blob/master/batchnorm.md#bn----before-or-after-relu
-            if i==0:
-                dnn_out=tf.concat([dnn_out, x_list[i]],axis=-1)
-            else:
-                dnn_out = tf.concat([x_list[0],dnn_out, x_list[i]], axis=-1)
-            dnn_out = tf.nn.dropout(dnn_out,keep_prob)  # Apply Dropout after all BN layers and set dropout=0.8(drop_ratio=0.2)
-            x_list.append(dnn_out)
-    return dnn_out
 
 
 def _bulid_dnn_withDice(X_input, deep_layers,l2_reg_lambda, batch_norm, train_phase,keep_prob,batch_norm_decay, scope):
@@ -782,163 +708,6 @@ def raw_deep_match(item_his_eb, context_his_eb, keys_length, mid_his_batch, EMBE
                                                          ))
     return loss, user_vector, scores
 
-
-
-
-def deep_self_attention(item_his_eb, keys_length, EMBEDDING_DIM, scope_bn):
-    with tf.variable_scope(scope_bn):
-        inputs = item_his_eb  # B,T,E
-        att_layer1 = tf.layers.dense(inputs, 80, activation=tf.nn.sigmoid, name='dm_att_1')
-        att_layer2 = tf.layers.dense(att_layer1, 40, activation=tf.nn.sigmoid, name='dm_att_2')
-        att_layer3 = tf.layers.dense(att_layer2, 1, activation=None, name='dm_att_3')  # B,T,1
-        scores = tf.transpose(att_layer3, [0, 2, 1])  # B,1,T
-
-        # Mask
-        key_masks = tf.sequence_mask(keys_length, tf.shape(item_his_eb)[1])  # [B, T]
-        key_masks = tf.expand_dims(key_masks, 1)  # [B, 1, T]
-        paddings = tf.ones_like(scores) * (-2 ** 32 + 1)
-        scores = tf.where(key_masks, scores, paddings)  # [B, 1, T]
-
-        scores = tf.nn.softmax(scores)  # B, 1, T
-        att_dm_item_his_eb = tf.matmul(scores, item_his_eb)  # B, 1, E
-
-        dnn_layer1 = tf.layers.dense(att_dm_item_his_eb, EMBEDDING_DIM, activation=None, name='dm_fcn_1')
-        dnn_layer1 = prelu(dnn_layer1, 'dm_fcn_1')  # B, 1, E
-
-        # target mask
-        user_vector = tf.reduce_sum(dnn_layer1, axis=1)  # B, E
-
-        return user_vector, scores
-
-
-
-def DinAttention_multi_items(queries, keys, keys_length):
-  '''
-    queries:     [B, N, H] N is the number of ads
-    keys:        [B, T, H]
-    keys_length: [B]
-  '''
-  queries_hidden_units = queries.get_shape().as_list()[-1]
-  queries_nums = queries.get_shape().as_list()[1]
-  queries = tf.tile(queries, [1, 1, tf.shape(keys)[1]])
-  queries = tf.reshape(queries, [-1, queries_nums, tf.shape(keys)[1], queries_hidden_units]) # shape : [B, N, T, H]
-  max_len = tf.shape(keys)[1]
-  keys = tf.tile(keys, [1, queries_nums, 1])
-  keys = tf.reshape(keys, [-1, queries_nums, max_len, queries_hidden_units]) # shape : [B, N, T, H]
-  din_all = tf.concat([queries, keys, queries-keys, queries*keys], axis=-1)
-  d_layer_1_all = tf.layers.dense(din_all, 80, activation=tf.nn.sigmoid, name='f1_att', reuse=tf.AUTO_REUSE)
-  d_layer_2_all = tf.layers.dense(d_layer_1_all, 40, activation=tf.nn.sigmoid, name='f2_att', reuse=tf.AUTO_REUSE)
-  d_layer_3_all = tf.layers.dense(d_layer_2_all, 1, activation=None, name='f3_att', reuse=tf.AUTO_REUSE)
-  d_layer_3_all = tf.reshape(d_layer_3_all, [-1, queries_nums, 1, max_len])
-  outputs = d_layer_3_all
-  # Mask
-  key_masks = tf.sequence_mask(keys_length, max_len)   # [B, T]
-  key_masks = tf.tile(key_masks, [1, queries_nums])
-  key_masks = tf.reshape(key_masks, [-1, queries_nums, 1, max_len]) # shape : [B, N, 1, T]
-  paddings = tf.ones_like(outputs) * (-2 ** 32 + 1)
-  outputs = tf.where(key_masks, outputs, paddings)  # [B, N, 1, T]
-
-  # Scale
-  outputs = outputs / (keys.get_shape().as_list()[-1] ** 0.5)
-
-  # Activation
-  outputs = tf.nn.softmax(outputs)  # [B, N, 1, T]
-  outputs = tf.reshape(outputs, [-1, 1, max_len])
-  keys = tf.reshape(keys, [-1, max_len, queries_hidden_units])
-  #print outputs.get_shape().as_list()
-  #print keys.get_sahpe().as_list()
-  # Weighted sum
-  outputs = tf.matmul(outputs, keys)
-  outputs = tf.reshape(outputs, [-1, queries_nums, queries_hidden_units])  # [B, N, 1, H]
-  print(outputs.get_shape().as_list())
-  return outputs
-
-
-def DinAttention_multi_items_sparse(queries, keys, keys_length, queries_length):
-  '''
-    queries:     [B, N, H] N is the number of ads
-    keys:        [B, T, H]
-    keys_length: [B]
-  '''
-  queries_hidden_units = queries.get_shape().as_list()[-1]
-  queries_nums = queries.get_shape().as_list()[1]
-  queries = tf.tile(queries, [1, 1, tf.shape(keys)[1]])
-  queries = tf.reshape(queries, [-1, queries_nums, tf.shape(keys)[1], queries_hidden_units]) # shape : [B, N, T, H]
-  max_len = tf.shape(keys)[1]
-  keys = tf.tile(keys, [1, queries_nums, 1])
-  keys = tf.reshape(keys, [-1, queries_nums, max_len, queries_hidden_units]) # shape : [B, N, T, H]
-  din_all = tf.concat([queries, keys, queries-keys, queries*keys], axis=-1)
-  d_layer_1_all = tf.layers.dense(din_all, 80, activation=tf.nn.sigmoid, name='f1_att', reuse=tf.AUTO_REUSE)
-  d_layer_2_all = tf.layers.dense(d_layer_1_all, 40, activation=tf.nn.sigmoid, name='f2_att', reuse=tf.AUTO_REUSE)
-  d_layer_3_all = tf.layers.dense(d_layer_2_all, 1, activation=None, name='f3_att', reuse=tf.AUTO_REUSE)
-  d_layer_3_all = tf.reshape(d_layer_3_all, [-1, queries_nums, 1, max_len])
-  outputs = d_layer_3_all
-  # Mask
-  key_masks = tf.sequence_mask(keys_length, max_len)   # [B, T]
-  queries_masks= tf.sequence_mask(queries_length, tf.shape(queries)[1])   # [B, N]
-  m_masks= tf.reshape(key_masks,[max_len, tf.shape(keys_length)[0]]) # T*B
-  m_masks= tf.matmul(m_masks, queries_masks)  # T*N
-  m_masks= tf.tile(m_masks, [tf.shape(keys_length)[0], 1])
-  m_masks=tf.reshape(m_masks, [tf.shape(keys_length)[0], tf.shape(queries)[1], 1, max_len ]) # B, N,1, T
-
-  # key_masks = tf.tile(key_masks, [1, queries_nums])
-  # key_masks = tf.reshape(key_masks, [-1, queries_nums, 1, max_len]) # shape : [B, N, 1, T]
-  paddings = tf.ones_like(outputs) * (-2 ** 32 + 1)
-  outputs = tf.where(m_masks, outputs, paddings)  # [B, N, 1, T]
-
-  # Scale
-  outputs = outputs / (keys.get_shape().as_list()[-1] ** 0.5)
-
-  # Activation
-  outputs = tf.nn.softmax(outputs)  # [B, N, 1, T]
-  outputs = tf.reshape(outputs, [-1, 1, max_len])
-  keys = tf.reshape(keys, [-1, max_len, queries_hidden_units])
-  #print outputs.get_shape().as_list()
-  #print keys.get_sahpe().as_list()
-  # Weighted sum
-  outputs = tf.matmul(outputs, keys)
-  outputs = tf.reshape(outputs, [-1, queries_nums, queries_hidden_units])  # [B, N, 1, H]
-  print(outputs.get_shape().as_list())
-  return outputs
-
-
-def _textcnn(vocab_size, embedding_size, batch_char,filter_sizes, num_filters, max_len ):
-    with tf.variable_scope("textcnn_moudle"):
-        #textcnn Embedding:
-        charEmbedding_W = tf.Variable(
-            tf.random_normal([vocab_size, embedding_size], 0, 0.01), name="W")
-        embedded_chars = tf.nn.embedding_lookup(charEmbedding_W, batch_char)  # batch_size * seq * embedding_size
-        embedded_chars_expanded = tf.expand_dims(embedded_chars, -1)  # expand dims for conv operation
-        pooled_outputs = list()
-        # Create a convolution + max-pool layer for each filter size
-        for filter_size, filter_num in zip(filter_sizes, num_filters):
-            with tf.name_scope("cov2d-maxpool%s" % filter_size):
-                filter_shape = [filter_size, embedding_size, 1, filter_num]
-                W = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1), name="W")
-                b = tf.Variable(tf.constant(0.1, shape=[filter_num]), name="b")
-                conv = tf.nn.conv2d(
-                    embedded_chars_expanded,
-                    W,
-                    strides=[1, 1, 1, 1],
-                    padding="VALID",
-                    name="conv")
-                # print(conv.name, ": ", conv.shape) batch * (seq - filter_shape) + 1 * 1(output channel) *
-                # filter_num
-                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
-                pooled = tf.nn.max_pool(
-                    h,
-                    ksize=[1, max_len - filter_size + 1, 1, 1],
-                    strides=[1, 1, 1, 1],
-                    padding='VALID',
-                    name="pool")  # 全部池化到 1x1
-                # print(conv.name, ": ", conv.shape , "----", pooled.name, " : " ,pooled.shape)
-                pooled_outputs.append(pooled)
-        total_filters_num = sum(num_filters)
-
-        h_pool = tf.concat(pooled_outputs, 3)
-        h_pool_flat = tf.reshape(h_pool, [-1, total_filters_num])  # batch * total_num
-
-        return h_pool_flat
 
 
 def _build_extreme_FM(nn_input, filed_size,embedding_size, cross_layer_sizes, res=False, direct=False, bias=False, reduce_D=False, f_dim=2):
